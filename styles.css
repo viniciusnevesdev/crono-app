@@ -385,3 +385,243 @@ html[data-visual-style="ultra"] .tab-bar{
     transition-duration:.01ms!important;
   }
 }
+
+
+/* Histórico — cartão cronológico de 24 horas */
+.history-page{
+  padding:calc(26px + env(safe-area-inset-top)) 18px 34px;
+}
+
+.history-header{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:16px;
+  margin:0 2px 14px;
+}
+
+.history-header h1{
+  margin:0;
+  font-size:30px;
+  line-height:34px;
+  letter-spacing:-.6px;
+  font-weight:780;
+}
+
+.history-day-label{
+  color:var(--secondary);
+  font-size:13px;
+  font-weight:680;
+  padding-bottom:3px;
+}
+
+.chrono-card{
+  position:relative;
+  width:100%;
+  min-height:640px;
+  border:1px solid var(--line);
+  border-radius:32px;
+  overflow:hidden;
+  background:var(--card);
+  box-shadow:0 10px 30px rgba(0,0,0,.06);
+}
+
+.sleep-band{
+  position:relative;
+  min-height:92px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb,var(--accent) 12%,var(--card)) 0 8px,
+      color-mix(in srgb,var(--accent) 5%,var(--card)) 8px 16px
+    );
+}
+
+.sleep-band-top{
+  border-bottom:1px solid color-mix(in srgb,var(--accent) 16%,var(--line));
+  border-radius:31px 31px 24px 24px;
+}
+
+.sleep-band-bottom{
+  border-top:1px solid color-mix(in srgb,var(--accent) 16%,var(--line));
+  border-radius:24px 24px 31px 31px;
+}
+
+.sleep-band-copy{
+  display:grid;
+  gap:2px;
+  padding:10px 16px;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--card) 78%,transparent);
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+}
+
+.sleep-band-copy strong{
+  font-size:14px;
+  font-weight:760;
+}
+
+.sleep-band-copy small{
+  color:var(--secondary);
+  font-size:10.5px;
+  font-weight:620;
+}
+
+.chrono-flow{
+  position:relative;
+  padding:22px 28px 20px;
+}
+
+.chrono-flow::before{
+  content:"";
+  position:absolute;
+  top:20px;
+  bottom:20px;
+  left:50%;
+  width:2px;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--accent) 40%,var(--line));
+  transform:translateX(-50%);
+}
+
+.chrono-event{
+  position:relative;
+  z-index:1;
+  min-height:34px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr);
+  align-items:center;
+}
+
+.chrono-event .event-time{
+  justify-self:end;
+  padding-right:11px;
+  color:var(--secondary);
+  font-size:11px;
+  font-variant-numeric:tabular-nums;
+  font-weight:650;
+}
+
+.chrono-event .event-dot{
+  justify-self:center;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb,var(--accent) 12%,var(--card)),
+    0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent);
+}
+
+.chrono-event strong{
+  justify-self:start;
+  padding-left:11px;
+  font-size:14px;
+  line-height:17px;
+  font-weight:730;
+}
+
+.chrono-gap{
+  position:relative;
+  z-index:1;
+  min-height:48px;
+  display:grid;
+  place-items:center;
+}
+
+.gap-line{
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:50%;
+  width:4px;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--accent) 54%,transparent);
+  transform:translateX(-50%);
+}
+
+.gap-value{
+  position:relative;
+  z-index:1;
+  padding:3px 7px;
+  border:1px solid color-mix(in srgb,var(--accent) 18%,var(--line));
+  border-radius:999px;
+  background:var(--card);
+  color:var(--accent);
+  font-size:10.5px;
+  line-height:13px;
+  font-weight:740;
+  font-variant-numeric:tabular-nums;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+}
+
+.chrono-day-brace{
+  position:absolute;
+  z-index:3;
+  top:106px;
+  right:8px;
+  bottom:106px;
+  width:28px;
+  pointer-events:none;
+}
+
+.chrono-day-brace::before{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  right:9px;
+  width:11px;
+  border-right:2px solid color-mix(in srgb,var(--secondary) 62%,transparent);
+  border-top:2px solid color-mix(in srgb,var(--secondary) 62%,transparent);
+  border-bottom:2px solid color-mix(in srgb,var(--secondary) 62%,transparent);
+  border-radius:0 16px 16px 0;
+}
+
+.chrono-day-brace span{
+  position:absolute;
+  top:50%;
+  right:-1px;
+  transform:translateY(-50%) rotate(-90deg);
+  transform-origin:center;
+  color:var(--secondary);
+  font-size:10px;
+  line-height:12px;
+  font-weight:760;
+  letter-spacing:.03em;
+  white-space:nowrap;
+  background:var(--card);
+  padding:2px 4px;
+  border-radius:999px;
+}
+
+.chrono-note{
+  margin:9px 8px 0;
+  color:var(--secondary);
+  text-align:center;
+  font-size:11px;
+  line-height:15px;
+}
+
+html[data-theme="dark"] .chrono-card,
+html[data-theme="dark"] .gap-value{
+  box-shadow:none;
+}
+
+html[data-visual-style="ultra"] .chrono-card{
+  border-color:color-mix(in srgb,var(--accent) 28%,var(--line));
+  box-shadow:
+    0 12px 34px rgba(0,0,0,.08),
+    0 0 24px color-mix(in srgb,var(--accent) 14%,transparent);
+}
+
+@media(max-width:360px){
+  .chrono-flow{padding-left:18px;padding-right:18px}
+  .chrono-event strong{font-size:13px}
+  .chrono-event .event-time{font-size:10px}
+}
