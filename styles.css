@@ -127,17 +127,13 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   width:19px;
   height:19px;
   flex:0 0 auto;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:2;
-  stroke-linecap:round;
-  stroke-linejoin:round;
+  overflow:visible;
 }
 
+/* O peso visual pertence ao próprio SVG.
+   Nenhuma regra global engrossa, afina ou cria contorno artificial. */
 .theme-system-fill,
 .theme-dark-fill{
-  fill:currentColor;
-  stroke:none;
   opacity:.9;
 }
 
