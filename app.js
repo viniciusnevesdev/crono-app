@@ -1,10 +1,12 @@
 (() => {
+  const STORAGE_KEY='crono-settings-v1';
+  const DEFAULTS={theme:'system',visualStyle:'optimized'};
+
   const CURVES={
     ios:'cubic-bezier(.2,.8,.2,1)',
     spring:'cubic-bezier(.18,1.35,.35,1)'
   };
 
-  // Mesmas medidas do runtime atual do Mente.
   const DARK={
     barWidth:95,barHeight:52,bottomOffset:10,barPadding:1,barRadius:80,
     barOpacity:.11,barColor:'#ffffff',blur:2,saturation:260,brightness:105,
@@ -35,13 +37,35 @@
     </g>
   </svg>`;
 
+  function loadSettings(){
+    try{
+      return {...DEFAULTS,...JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')};
+    }catch{
+      return {...DEFAULTS};
+    }
+  }
+
+  let settings=loadSettings();
+
+  function saveSettings(){
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(settings));
+  }
+
+  function systemDark(){
+    return matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+
+  function isDark(){
+    return settings.theme==='dark'||(settings.theme==='system'&&systemDark());
+  }
+
   function rgba(hex,a){
     const n=parseInt(String(hex).replace('#',''),16)||0;
     return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
   }
 
   function cfg(){
-    return matchMedia('(prefers-color-scheme: dark)').matches?DARK:LIGHT;
+    return isDark()?DARK:LIGHT;
   }
 
   function hydrate(){
@@ -59,7 +83,7 @@
   const bar=document.querySelector('.tab-bar');
   const bubble=document.querySelector('.tab-bubble');
 
-  function render(){
+  function renderTabBar(){
     if(!bar||!bubble)return;
     const c=cfg();
     const tabs=[...bar.querySelectorAll('.tab-item')];
@@ -89,17 +113,19 @@
       const left=c.barPadding+idx*cell+(cell-w)/2;
       const top=c.barPadding+(innerH-h)/2;
 
-      bubble.style.left=`${left}px`;
-      bubble.style.top=`${top}px`;
-      bubble.style.bottom='auto';
-      bubble.style.width=`${w}px`;
-      bubble.style.height=`${h}px`;
-      bubble.style.transform='none';
-      bubble.style.borderRadius=`${c.bubbleRadius}px`;
-      bubble.style.background=rgba(c.bubbleColor,c.bubbleOpacity);
-      bubble.style.border=`${c.bubbleBorderWidth}px solid ${rgba(c.bubbleBorderColor,c.bubbleBorderOpacity)}`;
-      bubble.style.boxShadow=`0 ${c.bubbleShadowY}px ${c.bubbleShadowBlur}px ${rgba('#000000',c.bubbleShadowOpacity)}`;
-      bubble.style.transition=`left ${dur}ms ${curve},top ${dur}ms ${curve},width ${dur}ms ${curve},height ${dur}ms ${curve},background-color ${dur}ms ${curve}`;
+      Object.assign(bubble.style,{
+        left:`${left}px`,
+        top:`${top}px`,
+        bottom:'auto',
+        width:`${w}px`,
+        height:`${h}px`,
+        transform:'none',
+        borderRadius:`${c.bubbleRadius}px`,
+        background:rgba(c.bubbleColor,c.bubbleOpacity),
+        border:`${c.bubbleBorderWidth}px solid ${rgba(c.bubbleBorderColor,c.bubbleBorderOpacity)}`,
+        boxShadow:`0 ${c.bubbleShadowY}px ${c.bubbleShadowBlur}px ${rgba('#000000',c.bubbleShadowOpacity)}`,
+        transition:`left ${dur}ms ${curve},top ${dur}ms ${curve},width ${dur}ms ${curve},height ${dur}ms ${curve},background-color ${dur}ms ${curve}`
+      });
     });
 
     tabs.forEach((tab,i)=>{
@@ -111,7 +137,6 @@
       tab.style.opacity=String(active?1:c.inactiveOpacity);
       tab.style.gap=`${c.itemGap}px`;
       tab.style.transition=`color ${dur}ms ${curve},opacity ${dur}ms ${curve},transform ${Math.min(dur,220)}ms ease`;
-      tab.style.setProperty('--press-scale',String(c.pressScale));
 
       if(icon){
         icon.style.width=`${c.iconSize}px`;
@@ -128,21 +153,71 @@
     });
   }
 
+  function paintSettings(){
+    document.querySelectorAll('[data-theme-choice]').forEach(button=>{
+      const selected=button.dataset.themeChoice===settings.theme;
+      button.classList.toggle('selected',selected);
+      button.setAttribute('aria-pressed',String(selected));
+    });
+
+    document.querySelectorAll('[data-visual-style-mode]').forEach(button=>{
+      const selected=button.dataset.visualStyleMode===settings.visualStyle;
+      button.classList.toggle('selected',selected);
+      button.setAttribute('aria-pressed',String(selected));
+    });
+  }
+
+  function applyPreferences(){
+    document.documentElement.dataset.theme=settings.theme;
+    document.documentElement.dataset.visualStyle=settings.visualStyle;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content',isDark()?'#000000':'#F2F2F6');
+    paintSettings();
+    renderTabBar();
+  }
+
+  function switchTab(name){
+    document.querySelectorAll('.view').forEach(view=>{
+      view.classList.toggle('active',view.dataset.view===name);
+    });
+    document.querySelectorAll('.tab-item').forEach(tab=>{
+      tab.classList.toggle('selected',tab.dataset.tab===name);
+    });
+    renderTabBar();
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+
   hydrate();
-  render();
+  applyPreferences();
 
   document.querySelectorAll('.tab-item').forEach(tab=>{
     tab.addEventListener('pointerdown',()=>{tab.style.transform=`scale(${cfg().pressScale})`});
     const release=()=>{tab.style.transform=''};
     tab.addEventListener('pointerup',release);
     tab.addEventListener('pointercancel',release);
-    tab.addEventListener('click',()=>{
-      document.querySelectorAll('.tab-item').forEach(item=>item.classList.remove('selected'));
-      tab.classList.add('selected');
-      render();
+    tab.addEventListener('click',()=>switchTab(tab.dataset.tab));
+  });
+
+  document.querySelectorAll('[data-theme-choice]').forEach(button=>{
+    button.addEventListener('click',()=>{
+      const choice=button.dataset.themeChoice;
+      if(!['light','system','dark'].includes(choice))return;
+      settings.theme=choice;
+      saveSettings();
+      applyPreferences();
     });
   });
 
-  matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',render);
-  window.addEventListener('resize',render,{passive:true});
+  document.querySelectorAll('[data-visual-style-mode]').forEach(button=>{
+    button.addEventListener('click',()=>{
+      settings.visualStyle=button.dataset.visualStyleMode==='ultra'?'ultra':'optimized';
+      saveSettings();
+      applyPreferences();
+    });
+  });
+
+  matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{
+    if(settings.theme==='system')applyPreferences();
+  });
+
+  window.addEventListener('resize',renderTabBar,{passive:true});
 })();
