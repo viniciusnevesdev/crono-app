@@ -2,43 +2,19 @@
   color-scheme:light dark;
   --bg:#f5f5f7;
   --text:#111114;
-  --tab-active:#000;
-  --tab-inactive:#000;
-  --tab-inactive-opacity:.61;
-  --tab-bar-bg:rgba(255,255,255,.11);
-  --tab-bar-border:rgba(255,255,255,.12);
-  --tab-bubble-bg:rgba(116,167,255,.25);
-  --tab-bubble-border:rgba(255,255,255,.15);
 }
 
 @media(prefers-color-scheme:dark){
-  :root{
-    --bg:#000;
-    --text:#f5f5f7;
-    --tab-active:#fff;
-    --tab-inactive:#fff;
-    --tab-inactive-opacity:.61;
-    --tab-bar-bg:rgba(255,255,255,.11);
-    --tab-bar-border:rgba(255,255,255,.12);
-    --tab-bubble-bg:rgba(173,173,173,.50);
-    --tab-bubble-border:rgba(255,255,255,.15);
-  }
+  :root{--bg:#000;--text:#f5f5f7}
 }
 
 *{box-sizing:border-box}
-
-html,body{
-  margin:0;
-  min-height:100%;
-  background:var(--bg);
-}
-
+html,body{margin:0;min-height:100%;background:var(--bg)}
 body{
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
   -webkit-font-smoothing:antialiased;
 }
-
 button{font:inherit;-webkit-tap-highlight-color:transparent}
 
 .app-shell{
@@ -52,7 +28,6 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   padding-bottom:calc(74px + env(safe-area-inset-bottom));
 }
 
-/* Barra inferior baseada na implementação runtime real do Mente. */
 .tab-bar{
   position:fixed;
   z-index:30;
@@ -65,12 +40,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   grid-template-columns:repeat(5,minmax(0,1fr));
   gap:0;
   transform:translateX(-50%);
-  border:.5px solid var(--tab-bar-border);
   border-radius:80px;
-  background:var(--tab-bar-bg);
-  backdrop-filter:blur(2px) saturate(260%) brightness(105%);
-  -webkit-backdrop-filter:blur(2px) saturate(260%) brightness(105%);
-  box-shadow:0 8px 16px 2px rgba(0,0,0,.19);
   overflow:visible;
   isolation:isolate;
 }
@@ -78,15 +48,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 .tab-bubble{
   position:absolute;
   z-index:0;
-  border-radius:80px;
-  background:var(--tab-bubble-bg);
-  border:1.25px solid var(--tab-bubble-border);
-  box-shadow:0 -1px 10px rgba(0,0,0,.14);
   pointer-events:none;
-  transition:left .35s cubic-bezier(.18,1.35,.35,1),
-             top .35s cubic-bezier(.18,1.35,.35,1),
-             width .35s cubic-bezier(.18,1.35,.35,1),
-             height .35s cubic-bezier(.18,1.35,.35,1);
 }
 
 .tab-item{
@@ -94,40 +56,27 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   z-index:1;
   min-width:0;
   border:0;
-  border-radius:80px;
+  padding:0;
   background:transparent;
-  color:var(--tab-inactive);
-  opacity:var(--tab-inactive-opacity);
+  border-radius:80px;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:1px;
-  padding:0;
-  transition:color .35s cubic-bezier(.18,1.35,.35,1),
-             opacity .35s cubic-bezier(.18,1.35,.35,1),
-             transform .18s ease;
 }
-
-.tab-item.selected{
-  color:var(--tab-active);
-  opacity:1;
-}
-
-.tab-item:active{transform:scale(.92)}
 
 .tab-item>span{
-  width:18px;
-  height:18px;
   display:grid;
   place-items:center;
   line-height:0;
-  transform:translateY(-1px);
-  transition:transform .35s cubic-bezier(.18,1.35,.35,1);
+  flex:none;
 }
 
-.tab-item.selected>span{
-  transform:translateY(-1px) scale(1.32);
+.tab-item svg{
+  display:block;
+  width:100%;
+  height:100%;
+  overflow:visible;
 }
 
 .tab-item small{
@@ -136,21 +85,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  font-size:8px;
   line-height:1;
-  font-weight:650;
-}
-
-.svg-icon{
-  display:block;
-  width:100%;
-  height:100%;
-  overflow:visible;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:2;
-  stroke-linecap:round;
-  stroke-linejoin:round;
 }
 
 .rm-spark-custom,
@@ -163,6 +98,5 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   *,*::before,*::after{
     animation-duration:.01ms!important;
     transition-duration:.01ms!important;
-    scroll-behavior:auto!important;
   }
 }
