@@ -387,7 +387,7 @@ html[data-visual-style="ultra"] .tab-bar{
 }
 
 
-/* Histórico — cartão cronológico de 24 horas */
+/* Histórico — cronologia proporcional ao tempo */
 .history-page{
   padding:calc(26px + env(safe-area-inset-top)) 18px 34px;
 }
@@ -418,7 +418,7 @@ html[data-visual-style="ultra"] .tab-bar{
 .chrono-card{
   position:relative;
   width:100%;
-  min-height:640px;
+  min-height:0;
   border:1px solid var(--line);
   border-radius:32px;
   overflow:hidden;
@@ -428,7 +428,7 @@ html[data-visual-style="ultra"] .tab-bar{
 
 .sleep-band{
   position:relative;
-  min-height:92px;
+  min-height:64px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -442,6 +442,8 @@ html[data-visual-style="ultra"] .tab-bar{
 }
 
 .sleep-band-top{
+  height:var(--sleep-band-height,92px);
+  min-height:56px;
   border-bottom:1px solid color-mix(in srgb,var(--accent) 16%,var(--line));
   border-radius:31px 31px 24px 24px;
 }
@@ -529,8 +531,10 @@ html[data-visual-style="ultra"] .tab-bar{
 .chrono-gap{
   position:relative;
   z-index:1;
-  min-height:48px;
+  height:var(--chrono-gap-height,48px);
+  min-height:18px;
   display:grid;
+  transition:height .2s ease;
   place-items:center;
 }
 
@@ -558,46 +562,6 @@ html[data-visual-style="ultra"] .tab-bar{
   font-weight:740;
   font-variant-numeric:tabular-nums;
   box-shadow:0 1px 4px rgba(0,0,0,.06);
-}
-
-.chrono-day-brace{
-  position:absolute;
-  z-index:3;
-  top:106px;
-  right:8px;
-  bottom:106px;
-  width:28px;
-  pointer-events:none;
-}
-
-.chrono-day-brace::before{
-  content:"";
-  position:absolute;
-  top:0;
-  bottom:0;
-  right:9px;
-  width:11px;
-  border-right:2px solid color-mix(in srgb,var(--secondary) 62%,transparent);
-  border-top:2px solid color-mix(in srgb,var(--secondary) 62%,transparent);
-  border-bottom:2px solid color-mix(in srgb,var(--secondary) 62%,transparent);
-  border-radius:0 16px 16px 0;
-}
-
-.chrono-day-brace span{
-  position:absolute;
-  top:50%;
-  right:-1px;
-  transform:translateY(-50%) rotate(-90deg);
-  transform-origin:center;
-  color:var(--secondary);
-  font-size:10px;
-  line-height:12px;
-  font-weight:760;
-  letter-spacing:.03em;
-  white-space:nowrap;
-  background:var(--card);
-  padding:2px 4px;
-  border-radius:999px;
 }
 
 .chrono-note{
