@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="system">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -9,37 +9,21 @@
   <meta name="apple-mobile-web-app-title" content="Crono">
   <title>Crono</title>
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=20260928-02">
 </head>
 <body>
   <div class="app-shell">
-    <main class="content" id="content" aria-live="polite"></main>
+    <main class="content" id="content"></main>
 
     <nav class="tab-bar capsule-tabbar" aria-label="Navegação principal">
-      <span class="tab-bubble" aria-hidden="true"></span>
-
-      <button class="tab-item selected" type="button" data-tab="home" aria-label="Início">
-        <span class="tab-icon" data-icon="home"></span>
-        <small>Início</small>
-      </button>
-
-      <button class="tab-item" type="button" data-tab="history" aria-label="Histórico">
-        <span class="tab-icon" data-icon="history"></span>
-        <small>Histórico</small>
-      </button>
-
-      <button class="tab-item" type="button" data-tab="analysis" aria-label="Análises">
-        <span class="tab-icon" data-icon="chart"></span>
-        <small>Análises</small>
-      </button>
-
-      <button class="tab-item" type="button" data-tab="settings" aria-label="Ajustes">
-        <span class="tab-icon" data-icon="settings"></span>
-        <small>Ajustes</small>
-      </button>
+      <span class="tab-bubble" id="tabBubble" aria-hidden="true"></span>
+      <button class="tab-item selected" data-tab="home"><span data-icon="home"></span><small>Início</small></button>
+      <button class="tab-item" data-tab="history"><span data-icon="history"></span><small>Histórico</small></button>
+      <button class="tab-item" data-tab="analysis"><span data-icon="chart"></span><small>Análises</small></button>
+      <button class="tab-item" data-tab="settings"><span data-icon="settings"></span><small>Ajustes</small></button>
     </nav>
   </div>
 
-  <script src="./app.js"></script>
+  <script src="./app.js?v=20260928-02"></script>
 </body>
 </html>
