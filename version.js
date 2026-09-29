@@ -1,4 +1,4 @@
 window.CRONO_RELEASE=Object.freeze({
-  version:'0.1.8',
-  name:'Cartão cronológico'
+  version:'0.2.0',
+  name:'Eventos e backup'
 });
