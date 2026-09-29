@@ -1,0 +1,9 @@
+{
+  "name":"Crono",
+  "short_name":"Crono",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#f5f5f7",
+  "theme_color":"#f5f5f7",
+  "lang":"pt-BR"
+}
