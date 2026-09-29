@@ -241,57 +241,105 @@
     return `${minutes} min`;
   }
 
+  function sameLocalDay(a,b){
+    return a.getFullYear()===b.getFullYear()
+      && a.getMonth()===b.getMonth()
+      && a.getDate()===b.getDate();
+  }
+
+  function dayLabel(date){
+    const today=new Date();
+    const yesterday=new Date(today);
+    yesterday.setDate(today.getDate()-1);
+    if(sameLocalDay(date,today))return 'Hoje';
+    if(sameLocalDay(date,yesterday))return 'Ontem';
+    return new Intl.DateTimeFormat('pt-BR',{
+      day:'2-digit',month:'2-digit',year:'numeric'
+    }).format(date);
+  }
+
+  function renderChronology(){
+    const card=document.getElementById('chronoCard');
+    const label=document.getElementById('historyDayLabel');
+    if(!card||!label)return;
+
+    const valid=events
+      .map(event=>({event,date:new Date(event.at)}))
+      .filter(item=>!Number.isNaN(item.date.getTime()))
+      .sort((a,b)=>a.date-b.date);
+
+    if(!valid.length){
+      label.textContent='Hoje';
+      card.innerHTML=`
+        <div class="chrono-empty">
+          <strong>Nenhum registro ainda</strong>
+          <span>Os eventos que você criar aparecerão aqui.</span>
+        </div>`;
+      return;
+    }
+
+    const todayItems=valid.filter(item=>sameLocalDay(item.date,new Date()));
+    const targetDate=(todayItems.at(-1)||valid.at(-1)).date;
+    const dayItems=valid.filter(item=>sameLocalDay(item.date,targetDate));
+
+    label.textContent=dayLabel(targetDate);
+    card.replaceChildren();
+
+    const flow=document.createElement('div');
+    flow.className='chrono-flow';
+
+    dayItems.forEach((item,index)=>{
+      if(index>0){
+        const previous=dayItems[index-1].date;
+        const minutes=Math.max(0,(item.date-previous)/60000);
+        const gap=document.createElement('div');
+        gap.className='chrono-gap';
+        gap.dataset.minutes=String(minutes);
+        gap.innerHTML='<span class="gap-line"></span><span class="gap-value"></span>';
+        gap.querySelector('.gap-value').textContent=formatDurationMinutes(minutes);
+        flow.appendChild(gap);
+      }
+
+      const eventEl=document.createElement('div');
+      eventEl.className='chrono-event';
+
+      const time=document.createElement('span');
+      time.className='event-time';
+      time.textContent=new Intl.DateTimeFormat('pt-BR',{
+        hour:'2-digit',minute:'2-digit',hour12:false
+      }).format(item.date);
+
+      const dot=document.createElement('span');
+      dot.className='event-dot';
+
+      const title=document.createElement('strong');
+      title.textContent=item.event.title;
+
+      eventEl.append(time,dot,title);
+      flow.appendChild(eventEl);
+    });
+
+    card.appendChild(flow);
+    requestAnimationFrame(layoutChronologyByTime);
+  }
+
   function layoutChronologyByTime(){
     const card=document.querySelector('.chrono-card');
     const flow=card?.querySelector('.chrono-flow');
     if(!card||!flow)return;
 
-    // 24 horas continuam sendo a referência interna da escala, sem aparecer na interface.
+    // 24 horas são usadas apenas como referência matemática interna da escala.
     const timeSpanPx=Math.max(520,Math.min(760,Math.round(window.innerHeight*.68)));
     const pxPerMinute=timeSpanPx/DAY_MINUTES;
 
-    const timelineEvents=[...flow.querySelectorAll('.chrono-event')];
-    const absoluteMinutes=[];
-    let dayOffset=0;
-    let previousClock=null;
-
-    timelineEvents.forEach(event=>{
-      const clock=parseClockMinutes(event.querySelector('.event-time')?.textContent);
-      if(clock===null){
-        absoluteMinutes.push(null);
-        return;
-      }
-      if(previousClock!==null&&clock<previousClock)dayOffset+=DAY_MINUTES;
-      absoluteMinutes.push(clock+dayOffset);
-      previousClock=clock;
-    });
-
-    const gaps=[...flow.querySelectorAll('.chrono-gap')];
-    gaps.forEach((gap,index)=>{
-      const start=absoluteMinutes[index];
-      const end=absoluteMinutes[index+1];
-      if(start===null||end===null)return;
-
-      const duration=Math.max(0,end-start);
+    flow.querySelectorAll('.chrono-gap').forEach(gap=>{
+      const duration=Number(gap.dataset.minutes)||0;
       const height=Math.max(18,Math.round(duration*pxPerMinute));
       gap.style.setProperty('--chrono-gap-height',`${height}px`);
-      gap.dataset.minutes=String(duration);
 
-      const label=gap.querySelector('.gap-value');
-      if(label)label.textContent=formatDurationMinutes(duration);
+      const value=gap.querySelector('.gap-value');
+      if(value)value.textContent=formatDurationMinutes(duration);
     });
-
-    const topSleep=card.querySelector('.sleep-band-top');
-    if(topSleep){
-      const start=parseClockMinutes(topSleep.dataset.start);
-      const end=parseClockMinutes(topSleep.dataset.end);
-      if(start!==null&&end!==null){
-        const duration=end>=start?end-start:(DAY_MINUTES-start)+end;
-        const height=Math.max(56,Math.round(duration*pxPerMinute));
-        topSleep.style.setProperty('--sleep-band-height',`${height}px`);
-        topSleep.dataset.minutes=String(duration);
-      }
-    }
   }
 
   function updateEventSummary(){
@@ -362,6 +410,7 @@
     events.sort((a,b)=>new Date(a.at)-new Date(b.at));
     saveEvents();
     updateEventSummary();
+    renderChronology();
     closeEventSheet();
     toast('Evento salvo.');
   }
@@ -424,6 +473,7 @@
       saveSettings();
       applyPreferences();
       updateEventSummary();
+      renderChronology();
       toast('Backup importado.');
     }catch(error){
       console.error(error);
@@ -439,14 +489,14 @@
       tab.classList.toggle('selected',tab.dataset.tab===name);
     });
     renderTabBar();
-    if(name==='history')requestAnimationFrame(layoutChronologyByTime);
+    if(name==='history')renderChronology();
     window.scrollTo({top:0,behavior:'instant'});
   }
 
   hydrate();
   applyPreferences();
   updateEventSummary();
-  layoutChronologyByTime();
+  renderChronology();
 
   document.getElementById('createEventButton')?.addEventListener('click',openEventSheet);
   document.getElementById('saveEventButton')?.addEventListener('click',createEvent);
