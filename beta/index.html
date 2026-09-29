@@ -32,26 +32,11 @@
   <link rel="apple-touch-icon-precomposed" href="../apple-touch-icon.png?v=0.2.4-beta.2">
   <link rel="image_src" href="../icons/icon-512.jpg?v=0.2.4-beta.2">
   <title>Crono Beta</title>
-  <script>
-    (() => {
-      const localVersion = '0.2.4-beta.2';
-      fetch('./latest.json?t=' + Date.now(), { cache: 'no-store' })
-        .then(response => response.ok ? response.json() : null)
-        .then(latest => {
-          if (!latest?.version || latest.version === localVersion) return;
-          const url = new URL(location.href);
-          url.searchParams.set('v', latest.version);
-          url.searchParams.set('refresh', Date.now());
-          location.replace(url.toString());
-        })
-        .catch(() => {});
-    })();
-  </script>
   <link rel="manifest" href="./manifest.webmanifest?v=0.2.4-beta.2">
   <link rel="stylesheet" href="./styles.css?v=beta-003">
 </head>
 <body>
-  <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.2.4-beta.2 • Cronologia real</div>
+  <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.2.4-beta.4 • Atualização corrigida</div>
 
   <div class="app-shell">
     <main class="content" id="content">
@@ -241,8 +226,8 @@
     </nav>
   </div>
 
-  <script src="./version.js?v=0.2.4-beta.3"></script>
+  <script src="./version.js?v=0.2.4-beta.4"></script>
   <script src="./navicons.js?v=beta-001"></script>
-  <script src="./app.js?v=beta-004"></script>
+  <script src="./app.js?v=beta-005"></script>
 </body>
 </html>
