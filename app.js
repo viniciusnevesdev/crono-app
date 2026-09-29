@@ -1,21 +1,57 @@
-const icons={
-  home:'<path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-6h5v6"></path>',
-  history:'<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"></path><path d="M3.5 5v5h5"></path><path d="M12 7.5V12l3 2"></path>',
-  chart:'<path d="M4 19V10"></path><path d="M10 19V5"></path><path d="M16 19v-7"></path><path d="M22 19V8"></path>',
-  settings:'<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.86 2.86-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.6v-.1a1.7 1.7 0 0 0-.4-1.1 1.7 1.7 0 0 0-1-.6 1.7 1.7 0 0 0-1.88.34l-.06.06-2.86-2.86.06-.06A1.7 1.7 0 0 0 3.8 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H2V9.6h.1A1.7 1.7 0 0 0 3.2 9a1.7 1.7 0 0 0 .6-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06L6.26 3.2l.06.06A1.7 1.7 0 0 0 8.2 3.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V2h4v.1a1.7 1.7 0 0 0 .4 1.1 1.7 1.7 0 0 0 1 .6 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.86 2.86-.06.06A1.7 1.7 0 0 0 19.4 8c.1.4.3.75.6 1 .3.25.7.4 1.1.4h.1v4h-.1c-.4 0-.8.15-1.1.4-.3.25-.5.6-.6 1.2Z"></path>'
-};
+const sparkIcon=`
+<svg class="svg-icon rm-spark-custom" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21.7734 24.9609" aria-hidden="true" focusable="false" stroke="none">
+  <g stroke="none">
+    <rect height="24.9609" opacity="0" width="21.7734" x="0" y="0"/>
+    <path d="M4.36719 16.25C4.17969 16.25 4.04688 16.3672 4.02344 16.5625C3.61719 19.6875 3.51562 19.7188 0.34375 20.2578C0.125 20.2891 0 20.4062 0 20.6016C0 20.7969 0.125 20.9062 0.304688 20.9375C3.5 21.5547 3.61719 21.5234 4.02344 24.625C4.04688 24.8359 4.17969 24.9609 4.36719 24.9609C4.54688 24.9609 4.6875 24.8359 4.71094 24.6328C5.13281 21.4844 5.21875 21.4375 8.42188 20.9375C8.60156 20.9141 8.72656 20.7969 8.72656 20.6016C8.72656 20.4141 8.60156 20.2891 8.42188 20.2578C5.21875 19.6406 5.14062 19.6719 4.71094 16.5469C4.6875 16.3672 4.54688 16.25 4.36719 16.25Z" fill="currentColor" fill-opacity="0.85"/>
+    <path d="M12.2578 3.29688C11.9766 3.29688 11.7734 3.49219 11.7422 3.77344C10.8828 10.3359 10.0703 11.0547 3.64062 11.8828C3.35156 11.9141 3.14844 12.125 3.14844 12.3984C3.14844 12.6797 3.35156 12.8906 3.64062 12.9219C10.0938 13.5859 10.9531 14.4609 11.7422 21.0234C11.7734 21.3047 11.9766 21.5078 12.2578 21.5078C12.5312 21.5078 12.7422 21.3047 12.7812 21.0234C13.5781 14.4609 14.4297 13.5859 20.875 12.9219C21.1719 12.8906 21.3672 12.6797 21.3672 12.3984C21.3672 12.125 21.1719 11.9141 20.875 11.8828C14.4297 11.2109 13.5781 10.3359 12.7812 3.77344C12.7422 3.49219 12.5312 3.29688 12.2578 3.29688Z" fill="currentColor" fill-opacity="0.85"/>
+  </g>
+</svg>`;
 
-document.querySelectorAll('[data-icon]').forEach(el=>{
-  el.innerHTML='<svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">'+icons[el.dataset.icon]+'</svg>';
-});
+function hydrateIcons(){
+  document.querySelectorAll('[data-icon]').forEach(holder=>{
+    const name=holder.dataset.icon;
+    if(name==='spark'){
+      holder.innerHTML=sparkIcon;
+      return;
+    }
+    const body=window.REGISTRO_NAV_ICONS?.[name];
+    if(body){
+      holder.innerHTML='<svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true">'+body+'</svg>';
+    }
+  });
+}
 
-const tabBar=document.querySelector('.tab-bar');
+const bar=document.querySelector('.tab-bar');
+const bubble=document.querySelector('.tab-bubble');
 const tabs=[...document.querySelectorAll('.tab-item')];
 
-tabs.forEach((tab,index)=>{
+function applyTabBar(){
+  if(!bar||!bubble)return;
+  const idx=Math.max(0,tabs.findIndex(tab=>tab.classList.contains('selected')));
+  const padding=1;
+  const count=tabs.length;
+  const innerW=Math.max(0,bar.clientWidth-padding*2);
+  const innerH=Math.max(0,bar.clientHeight-padding*2);
+  const cell=innerW/count;
+  const width=cell*.99;
+  const height=innerH*.99;
+  const left=padding+idx*cell+(cell-width)/2;
+  const top=padding+(innerH-height)/2;
+
+  bubble.style.left=left+'px';
+  bubble.style.top=top+'px';
+  bubble.style.width=width+'px';
+  bubble.style.height=height+'px';
+}
+
+tabs.forEach(tab=>{
   tab.addEventListener('click',()=>{
     tabs.forEach(item=>item.classList.remove('selected'));
     tab.classList.add('selected');
-    tabBar.style.setProperty('--tab-index',String(index));
+    applyTabBar();
   });
 });
+
+hydrateIcons();
+requestAnimationFrame(applyTabBar);
+window.addEventListener('resize',applyTabBar,{passive:true});
