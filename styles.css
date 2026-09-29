@@ -102,15 +102,16 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 }
 
 .settings-card{
-  margin:0;
+  width:calc(100% - 36px);
+  margin:0 auto;
   background:var(--card);
-  border-radius:22px;
+  border-radius:19px;
   overflow:hidden;
   border:1px solid var(--line);
 }
 
 .theme-mode-card{
-  padding:4px;
+  padding:3px;
 }
 
 .theme-mode-segment{
@@ -122,16 +123,16 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 
 .theme-mode-segment button{
   min-width:0;
-  min-height:44px;
+  min-height:38px;
   border:0;
-  border-radius:18px;
+  border-radius:15px;
   background:transparent;
   color:var(--secondary);
   display:flex;
   align-items:center;
   justify-content:center;
   gap:7px;
-  padding:7px 5px;
+  padding:4px 5px;
   font-size:13px;
   line-height:16px;
   font-weight:700;
@@ -163,7 +164,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 }
 
 .visual-style-card.compact{
-  padding:4px;
+  padding:3px;
 }
 
 .visual-style-picker{
@@ -174,16 +175,16 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 
 .visual-style-option{
   min-width:0;
-  min-height:44px;
+  min-height:38px;
   border:0;
-  border-radius:18px;
+  border-radius:15px;
   background:transparent;
   color:var(--secondary);
   display:flex;
   align-items:center;
   justify-content:center;
   gap:7px;
-  padding:7px 9px;
+  padding:4px 9px;
   transition:background-color .18s ease,color .18s ease,transform .15s ease,box-shadow .18s ease;
 }
 
@@ -295,7 +296,7 @@ html[data-visual-style="ultra"] .tab-bar{
 
 @media(min-width:481px){
   .settings-content{padding-left:12px;padding-right:12px}
-  .settings-card{margin-left:0;margin-right:0}
+  .settings-card{width:calc(100% - 36px);margin-left:auto;margin-right:auto}
 }
 
 @media(prefers-reduced-motion:reduce){
