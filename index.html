@@ -9,14 +9,27 @@
   <meta name="apple-mobile-web-app-title" content="Crono">
   <title>Crono</title>
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="./styles.css?v=20260929-09">
+  <link rel="stylesheet" href="./styles.css?v=20260929-10">
 </head>
 <body>
-  <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.1.8 • Cartão cronológico</div>
+  <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.2.0 • Eventos e backup</div>
 
   <div class="app-shell">
     <main class="content" id="content">
-      <section class="view active" data-view="event" aria-label="Adicionar evento"></section>
+      <section class="view active event-view" data-view="event" aria-label="Adicionar evento">
+        <div class="event-page">
+          <header class="event-header">
+            <h1>Evento</h1>
+          </header>
+
+          <button class="primary-action event-create-button" id="createEventButton" type="button">
+            <span class="action-icon" aria-hidden="true">+</span>
+            <span>Criar evento</span>
+          </button>
+
+          <div class="event-summary" id="eventSummary" aria-live="polite"></div>
+        </div>
+      </section>
       <section class="view history-view" data-view="history" aria-label="Histórico">
         <div class="history-page">
           <header class="history-header">
@@ -165,9 +178,52 @@
               </div>
             </div>
           </section>
+
+          <section class="settings-section backup-section">
+            <h2 class="section-label">Backup</h2>
+            <div class="backup-actions">
+              <button class="backup-button" id="exportBackupButton" type="button">
+                <span>Exportar backup</span>
+              </button>
+              <button class="backup-button" id="importBackupButton" type="button">
+                <span>Importar backup</span>
+              </button>
+              <input id="backupFileInput" type="file" accept="application/json,.json" hidden>
+            </div>
+          </section>
         </div>
       </section>
     </main>
+
+    <div class="event-sheet-wrap" id="eventSheet" hidden>
+      <div class="event-sheet-backdrop" data-close-event-sheet></div>
+      <section class="event-sheet" role="dialog" aria-modal="true" aria-labelledby="eventSheetTitle">
+        <div class="event-sheet-head">
+          <button class="sheet-text-button" type="button" data-close-event-sheet>Cancelar</button>
+          <h2 id="eventSheetTitle">Novo evento</h2>
+          <button class="sheet-text-button save" id="saveEventButton" type="button">Salvar</button>
+        </div>
+
+        <div class="event-form">
+          <label>
+            <span>Evento</span>
+            <input id="eventTitleInput" type="text" maxlength="120" placeholder="O que aconteceu?" autocomplete="off">
+          </label>
+
+          <label>
+            <span>Data e hora</span>
+            <input id="eventDateTimeInput" type="datetime-local">
+          </label>
+
+          <label>
+            <span>Nota <small>opcional</small></span>
+            <textarea id="eventNotesInput" rows="3" maxlength="1000" placeholder="Algum detalhe?"></textarea>
+          </label>
+        </div>
+      </section>
+    </div>
+
+    <div class="app-toast" id="appToast" role="status" aria-live="polite"></div>
 
     <nav class="tab-bar" aria-label="Navegação principal">
       <span class="tab-bubble" aria-hidden="true"></span>
@@ -201,8 +257,8 @@
     </nav>
   </div>
 
-  <script src="./version.js?v=0.1.8"></script>
+  <script src="./version.js?v=0.2.0"></script>
   <script src="./navicons.js?v=20260929-04"></script>
-  <script src="./app.js?v=20260929-06"></script>
+  <script src="./app.js?v=20260929-07"></script>
 </body>
 </html>
