@@ -48,7 +48,7 @@
     })();
   </script>
   <link rel="manifest" href="./manifest.webmanifest?v=0.2.4-beta.1">
-  <link rel="stylesheet" href="./styles.css?v=beta-002">
+  <link rel="stylesheet" href="./styles.css?v=beta-003">
 </head>
 <body>
   <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.2.4-beta.1 • Ícone do app</div>
@@ -79,89 +79,15 @@
         <div class="history-page">
           <header class="history-header">
             <h1>Cronologia</h1>
-            <div class="history-day-label">Hoje</div>
+            <div class="history-day-label" id="historyDayLabel">Hoje</div>
           </header>
 
-          <article class="chrono-card" aria-label="Cronologia do dia">
-            <div class="sleep-band sleep-band-top" data-start="00:00" data-end="08:18">
-              <div class="sleep-band-copy">
-                <strong>Dormindo</strong>
-                <small>00:00 — 08:18</small>
-              </div>
-            </div>
-
-            <div class="chrono-flow">
-              <div class="chrono-event">
-                <span class="event-time">08:18</span>
-                <span class="event-dot"></span>
-                <strong>Acordei</strong>
-              </div>
-
-              <div class="chrono-gap">
-                <span class="gap-line"></span>
-                <span class="gap-value">3 h 02 min</span>
-              </div>
-
-              <div class="chrono-event">
-                <span class="event-time">11:20</span>
-                <span class="event-dot"></span>
-                <strong>Almoço</strong>
-              </div>
-
-              <div class="chrono-gap">
-                <span class="gap-line"></span>
-                <span class="gap-value">3 h</span>
-              </div>
-
-              <div class="chrono-event">
-                <span class="event-time">14:20</span>
-                <span class="event-dot"></span>
-                <strong>Fui ao mercado</strong>
-              </div>
-
-              <div class="chrono-gap">
-                <span class="gap-line"></span>
-                <span class="gap-value">4 h</span>
-              </div>
-
-              <div class="chrono-event">
-                <span class="event-time">18:20</span>
-                <span class="event-dot"></span>
-                <strong>Banho</strong>
-              </div>
-
-              <div class="chrono-gap">
-                <span class="gap-line"></span>
-                <span class="gap-value">1 h</span>
-              </div>
-
-              <div class="chrono-event">
-                <span class="event-time">19:20</span>
-                <span class="event-dot"></span>
-                <strong>Jantar</strong>
-              </div>
-
-              <div class="chrono-gap">
-                <span class="gap-line"></span>
-                <span class="gap-value">4 h 40 min</span>
-              </div>
-
-              <div class="chrono-event">
-                <span class="event-time">00:00</span>
-                <span class="event-dot"></span>
-                <strong>Dormi</strong>
-              </div>
-            </div>
-
-            <div class="sleep-band sleep-band-bottom">
-              <div class="sleep-band-copy">
-                <strong>Dormindo</strong>
-                <small>início do próximo dia</small>
-              </div>
+          <article class="chrono-card" id="chronoCard" aria-label="Cronologia">
+            <div class="chrono-empty" id="chronoEmpty">
+              <strong>Nenhum registro ainda</strong>
+              <span>Os eventos que você criar aparecerão aqui.</span>
             </div>
           </article>
-
-          <p class="chrono-note">Os tempos indicam o intervalo entre um registro e o próximo.</p>
         </div>
       </section>
       <section class="view" data-view="analysis" aria-label="Análises"></section>
@@ -315,8 +241,8 @@
     </nav>
   </div>
 
-  <script src="./version.js?v=0.2.3-beta.2"></script>
+  <script src="./version.js?v=0.2.4-beta.2"></script>
   <script src="./navicons.js?v=beta-001"></script>
-  <script src="./app.js?v=beta-002"></script>
+  <script src="./app.js?v=beta-003"></script>
 </body>
 </html>
