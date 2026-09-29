@@ -9,15 +9,107 @@
   <meta name="apple-mobile-web-app-title" content="Crono">
   <title>Crono</title>
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="./styles.css?v=20260929-08">
+  <link rel="stylesheet" href="./styles.css?v=20260929-09">
 </head>
 <body>
-  <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.1.7 • Página Evento</div>
+  <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.1.8 • Cartão cronológico</div>
 
   <div class="app-shell">
     <main class="content" id="content">
       <section class="view active" data-view="event" aria-label="Adicionar evento"></section>
-      <section class="view" data-view="history" aria-label="Histórico"></section>
+      <section class="view history-view" data-view="history" aria-label="Histórico">
+        <div class="history-page">
+          <header class="history-header">
+            <h1>Cronologia</h1>
+            <div class="history-day-label">Hoje</div>
+          </header>
+
+          <article class="chrono-card" aria-label="Cronologia de 24 horas">
+            <div class="chrono-day-brace" aria-hidden="true">
+              <span>24 h</span>
+            </div>
+
+            <div class="sleep-band sleep-band-top">
+              <div class="sleep-band-copy">
+                <strong>Dormindo</strong>
+                <small>00:00 — 08:18</small>
+              </div>
+            </div>
+
+            <div class="chrono-flow">
+              <div class="chrono-event">
+                <span class="event-time">08:18</span>
+                <span class="event-dot"></span>
+                <strong>Acordei</strong>
+              </div>
+
+              <div class="chrono-gap">
+                <span class="gap-line"></span>
+                <span class="gap-value">3 h 02 min</span>
+              </div>
+
+              <div class="chrono-event">
+                <span class="event-time">11:20</span>
+                <span class="event-dot"></span>
+                <strong>Almoço</strong>
+              </div>
+
+              <div class="chrono-gap">
+                <span class="gap-line"></span>
+                <span class="gap-value">3 h</span>
+              </div>
+
+              <div class="chrono-event">
+                <span class="event-time">14:20</span>
+                <span class="event-dot"></span>
+                <strong>Fui ao mercado</strong>
+              </div>
+
+              <div class="chrono-gap">
+                <span class="gap-line"></span>
+                <span class="gap-value">4 h</span>
+              </div>
+
+              <div class="chrono-event">
+                <span class="event-time">18:20</span>
+                <span class="event-dot"></span>
+                <strong>Banho</strong>
+              </div>
+
+              <div class="chrono-gap">
+                <span class="gap-line"></span>
+                <span class="gap-value">1 h</span>
+              </div>
+
+              <div class="chrono-event">
+                <span class="event-time">19:20</span>
+                <span class="event-dot"></span>
+                <strong>Jantar</strong>
+              </div>
+
+              <div class="chrono-gap">
+                <span class="gap-line"></span>
+                <span class="gap-value">4 h 40 min</span>
+              </div>
+
+              <div class="chrono-event">
+                <span class="event-time">00:00</span>
+                <span class="event-dot"></span>
+                <strong>Dormi</strong>
+              </div>
+            </div>
+
+            <div class="sleep-band sleep-band-bottom">
+              <div class="sleep-band-copy">
+                <strong>Dormindo</strong>
+                <small>início do próximo dia</small>
+              </div>
+            </div>
+          </article>
+
+          <p class="chrono-note">Os tempos indicam o intervalo entre um registro e o próximo.</p>
+        </div>
+      </section>
       <section class="view" data-view="analysis" aria-label="Análises"></section>
       <section class="view" data-view="learning" aria-label="Aprendizado"></section>
 
@@ -109,7 +201,7 @@
     </nav>
   </div>
 
-  <script src="./version.js?v=0.1.7"></script>
+  <script src="./version.js?v=0.1.8"></script>
   <script src="./navicons.js?v=20260929-04"></script>
   <script src="./app.js?v=20260929-06"></script>
 </body>
