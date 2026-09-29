@@ -93,12 +93,12 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 }
 
 .section-label{
-  margin:0 18px 8px;
+  margin:0 18px 7px;
   color:var(--text);
   font-size:16px;
   line-height:20px;
   font-weight:760;
-  text-align:left;
+  text-align:center;
 }
 
 .settings-card{
@@ -111,7 +111,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 }
 
 .theme-mode-card{
-  padding:3px;
+  padding:2px;
 }
 
 .theme-mode-segment{
@@ -123,16 +123,16 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 
 .theme-mode-segment button{
   min-width:0;
-  min-height:38px;
+  min-height:32px;
   border:0;
-  border-radius:15px;
+  border-radius:13px;
   background:transparent;
   color:var(--secondary);
   display:flex;
   align-items:center;
   justify-content:center;
   gap:7px;
-  padding:4px 5px;
+  padding:2px 5px;
   font-size:13px;
   line-height:16px;
   font-weight:700;
@@ -164,7 +164,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 }
 
 .visual-style-card.compact{
-  padding:3px;
+  padding:2px;
 }
 
 .visual-style-picker{
@@ -175,16 +175,16 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 
 .visual-style-option{
   min-width:0;
-  min-height:38px;
+  min-height:32px;
   border:0;
-  border-radius:15px;
+  border-radius:13px;
   background:transparent;
   color:var(--secondary);
   display:flex;
   align-items:center;
   justify-content:center;
   gap:7px;
-  padding:4px 9px;
+  padding:2px 9px;
   transition:background-color .18s ease,color .18s ease,transform .15s ease,box-shadow .18s ease;
 }
 
