@@ -5,41 +5,36 @@
   --surface-2:#f2f2f7;
   --text:#111114;
   --secondary:#6e6e73;
+  --tertiary:#8e8e93;
   --separator:rgba(60,60,67,.14);
   --accent:#7259d6;
+  --icon-size:1;
+  --icon-stroke:2;
   --tabbar-opacity:.84;
   --tab-bubble-opacity:.92;
   --tabbar-blur:24px;
-  --icon-size:1;
-  --icon-stroke:2;
 }
 
-@media (prefers-color-scheme:dark){
-  :root{
+@media(prefers-color-scheme:dark){
+  html[data-theme="system"]{
+    color-scheme:dark;
     --bg:#000;
     --surface:#1c1c1e;
     --surface-2:#2c2c2e;
     --text:#f5f5f7;
     --secondary:#aeaeb2;
+    --tertiary:#8e8e93;
     --separator:rgba(84,84,88,.55);
   }
 }
 
 *{box-sizing:border-box}
-
-html,body{
-  margin:0;
-  min-height:100%;
-  background:var(--bg);
-}
-
+html,body{margin:0;min-height:100%;background:var(--bg)}
 body{
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
   -webkit-font-smoothing:antialiased;
-  overscroll-behavior:none;
 }
-
 button{font:inherit;-webkit-tap-highlight-color:transparent}
 
 .app-shell{
@@ -53,6 +48,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   padding:calc(18px + env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom));
 }
 
+/* Barra inferior copiada da implementação atual do Mente */
 .tab-bar{
   position:fixed;
   z-index:30;
@@ -61,19 +57,73 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   transform:translateX(-50%);
   width:min(calc(100% - 24px),456px);
   height:72px;
+  padding:7px 8px;
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:3px;
   border:1px solid var(--separator);
+  border-radius:26px;
+  background:color-mix(in srgb,var(--surface) 80%,transparent);
+  backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);
   box-shadow:0 10px 34px rgba(0,0,0,.16);
 }
 
+.tab-item{
+  border:0;
+  background:transparent;
+  color:var(--secondary);
+  border-radius:19px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+}
+
+.tab-item>span{
+  display:grid;
+  place-items:center;
+  line-height:0;
+}
+
+.tab-item svg{
+  width:calc(22px * var(--icon-size));
+  height:calc(22px * var(--icon-size));
+  margin:auto;
+}
+
+.tab-item small{
+  font-size:9.5px;
+  font-weight:650;
+}
+
+.tab-item.selected{
+  background:var(--surface-2);
+  color:var(--accent);
+}
+
+.svg-icon{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:var(--icon-stroke);
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  display:block;
+  width:100%;
+  height:100%;
+  overflow:visible;
+  vector-effect:non-scaling-stroke;
+}
+
+/* Camada capsule-tabbar do Mente, que sobrescreve a base acima */
 .capsule-tabbar{
   border-radius:999px;
   overflow:hidden;
   background:color-mix(in srgb,var(--surface) calc(var(--tabbar-opacity)*100%),transparent);
   backdrop-filter:blur(var(--tabbar-blur)) saturate(160%);
   -webkit-backdrop-filter:blur(var(--tabbar-blur)) saturate(160%);
+  position:fixed;
   padding:6px;
   isolation:isolate;
 }
@@ -95,54 +145,15 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 .tab-item{
   position:relative;
   z-index:1;
-  border:0;
-  background:transparent;
-  color:var(--secondary);
   border-radius:999px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:3px;
+  background:transparent!important;
   transition:color .18s ease,transform .15s ease;
 }
 
 .tab-item:active{transform:scale(.96)}
-.tab-item.selected{color:var(--accent)}
+.tab-item.selected{background:transparent!important}
 
-.tab-icon{
-  width:22px;
-  height:22px;
-  display:grid;
-  place-items:center;
-  line-height:0;
-}
-
-.tab-icon svg{
-  width:calc(22px * var(--icon-size));
-  height:calc(22px * var(--icon-size));
-  margin:auto;
-}
-
-.tab-item small{
-  font-size:9.5px;
-  font-weight:650;
-}
-
-.svg-icon{
-  display:block;
-  width:100%;
-  height:100%;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:var(--icon-stroke);
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  overflow:visible;
-  vector-effect:non-scaling-stroke;
-}
-
-@media (prefers-reduced-motion:reduce){
+@media(prefers-reduced-motion:reduce){
   *,*::before,*::after{
     animation-duration:.01ms!important;
     transition-duration:.01ms!important;
