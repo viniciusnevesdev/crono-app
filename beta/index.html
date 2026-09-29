@@ -27,7 +27,7 @@
     })();
   </script>
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="./styles.css?v=beta-001">
+  <link rel="stylesheet" href="./styles.css?v=beta-002">
 </head>
 <body>
   <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.2.3-beta.1 • Beta inicial</div>
@@ -61,12 +61,8 @@
             <div class="history-day-label">Hoje</div>
           </header>
 
-          <article class="chrono-card" aria-label="Cronologia de 24 horas">
-            <div class="chrono-day-brace" aria-hidden="true">
-              <span>24 h</span>
-            </div>
-
-            <div class="sleep-band sleep-band-top">
+          <article class="chrono-card" aria-label="Cronologia do dia">
+            <div class="sleep-band sleep-band-top" data-start="00:00" data-end="08:18">
               <div class="sleep-band-copy">
                 <strong>Dormindo</strong>
                 <small>00:00 — 08:18</small>
@@ -298,8 +294,8 @@
     </nav>
   </div>
 
-  <script src="./version.js?v=0.2.3-beta.1"></script>
+  <script src="./version.js?v=0.2.3-beta.2"></script>
   <script src="./navicons.js?v=beta-001"></script>
-  <script src="./app.js?v=beta-001"></script>
+  <script src="./app.js?v=beta-002"></script>
 </body>
 </html>
