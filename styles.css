@@ -105,7 +105,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   width:calc(100% - 36px);
   margin:0 auto;
   background:var(--card);
-  border-radius:19px;
+  border-radius:999px;
   overflow:hidden;
   border:1px solid var(--line);
 }
@@ -133,7 +133,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   left:0;
   width:calc((100% - 6px)/3);
   border:1px solid color-mix(in srgb,var(--accent) 34%,var(--line));
-  border-radius:13px;
+  border-radius:999px;
   background:linear-gradient(
     180deg,
     color-mix(in srgb,var(--accent) 15%,var(--card)),
@@ -167,7 +167,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   min-width:0;
   min-height:32px;
   border:0;
-  border-radius:13px;
+  border-radius:999px;
   background:transparent;
   color:var(--secondary);
   display:flex;
@@ -227,7 +227,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   left:0;
   width:calc((100% - 4px)/2);
   border:1px solid color-mix(in srgb,var(--accent) 34%,var(--line));
-  border-radius:13px;
+  border-radius:999px;
   background:linear-gradient(
     180deg,
     color-mix(in srgb,var(--accent) 15%,var(--card)),
@@ -257,7 +257,7 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   min-width:0;
   min-height:32px;
   border:0;
-  border-radius:13px;
+  border-radius:999px;
   background:transparent;
   color:var(--secondary);
   display:flex;
