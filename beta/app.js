@@ -221,6 +221,79 @@
     }).format(date);
   }
 
+  const DAY_MINUTES=24*60;
+
+  function parseClockMinutes(value){
+    const match=String(value||'').trim().match(/^(\d{1,2}):(\d{2})$/);
+    if(!match)return null;
+    const hour=Number(match[1]);
+    const minute=Number(match[2]);
+    if(hour<0||hour>23||minute<0||minute>59)return null;
+    return hour*60+minute;
+  }
+
+  function formatDurationMinutes(totalMinutes){
+    const total=Math.max(0,Math.round(totalMinutes));
+    const hours=Math.floor(total/60);
+    const minutes=total%60;
+    if(hours&&minutes)return `${hours} h ${String(minutes).padStart(2,'0')} min`;
+    if(hours)return `${hours} h`;
+    return `${minutes} min`;
+  }
+
+  function layoutChronologyByTime(){
+    const card=document.querySelector('.chrono-card');
+    const flow=card?.querySelector('.chrono-flow');
+    if(!card||!flow)return;
+
+    // 24 horas continuam sendo a referência interna da escala, sem aparecer na interface.
+    const timeSpanPx=Math.max(520,Math.min(760,Math.round(window.innerHeight*.68)));
+    const pxPerMinute=timeSpanPx/DAY_MINUTES;
+
+    const timelineEvents=[...flow.querySelectorAll('.chrono-event')];
+    const absoluteMinutes=[];
+    let dayOffset=0;
+    let previousClock=null;
+
+    timelineEvents.forEach(event=>{
+      const clock=parseClockMinutes(event.querySelector('.event-time')?.textContent);
+      if(clock===null){
+        absoluteMinutes.push(null);
+        return;
+      }
+      if(previousClock!==null&&clock<previousClock)dayOffset+=DAY_MINUTES;
+      absoluteMinutes.push(clock+dayOffset);
+      previousClock=clock;
+    });
+
+    const gaps=[...flow.querySelectorAll('.chrono-gap')];
+    gaps.forEach((gap,index)=>{
+      const start=absoluteMinutes[index];
+      const end=absoluteMinutes[index+1];
+      if(start===null||end===null)return;
+
+      const duration=Math.max(0,end-start);
+      const height=Math.max(18,Math.round(duration*pxPerMinute));
+      gap.style.setProperty('--chrono-gap-height',`${height}px`);
+      gap.dataset.minutes=String(duration);
+
+      const label=gap.querySelector('.gap-value');
+      if(label)label.textContent=formatDurationMinutes(duration);
+    });
+
+    const topSleep=card.querySelector('.sleep-band-top');
+    if(topSleep){
+      const start=parseClockMinutes(topSleep.dataset.start);
+      const end=parseClockMinutes(topSleep.dataset.end);
+      if(start!==null&&end!==null){
+        const duration=end>=start?end-start:(DAY_MINUTES-start)+end;
+        const height=Math.max(56,Math.round(duration*pxPerMinute));
+        topSleep.style.setProperty('--sleep-band-height',`${height}px`);
+        topSleep.dataset.minutes=String(duration);
+      }
+    }
+  }
+
   function updateEventSummary(){
     const summary=document.getElementById('eventSummary');
     if(!summary)return;
@@ -366,12 +439,14 @@
       tab.classList.toggle('selected',tab.dataset.tab===name);
     });
     renderTabBar();
+    if(name==='history')requestAnimationFrame(layoutChronologyByTime);
     window.scrollTo({top:0,behavior:'instant'});
   }
 
   hydrate();
   applyPreferences();
   updateEventSummary();
+  layoutChronologyByTime();
 
   document.getElementById('createEventButton')?.addEventListener('click',openEventSheet);
   document.getElementById('saveEventButton')?.addEventListener('click',createEvent);
@@ -423,5 +498,8 @@
     if(settings.theme==='system')applyPreferences();
   });
 
-  window.addEventListener('resize',renderTabBar,{passive:true});
+  window.addEventListener('resize',()=>{
+    renderTabBar();
+    layoutChronologyByTime();
+  },{passive:true});
 })();
