@@ -1,4 +1,11 @@
 (() => {
+  const RELEASE=window.CRONO_RELEASE||{version:'0.1.0',name:'Base'};
+  const versionBadge=document.getElementById('versionBadge');
+  if(versionBadge){
+    versionBadge.textContent=`v${RELEASE.version} • ${RELEASE.name}`;
+    versionBadge.title=`Crono v${RELEASE.version} — ${RELEASE.name}`;
+  }
+
   const STORAGE_KEY='crono-settings-v1';
   const DEFAULTS={theme:'system',visualStyle:'optimized'};
 
