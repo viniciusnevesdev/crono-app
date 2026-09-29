@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR" data-theme="system">
+<html lang="pt-BR" data-theme="system" data-visual-style="optimized">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -9,11 +9,66 @@
   <meta name="apple-mobile-web-app-title" content="Crono">
   <title>Crono</title>
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="./styles.css?v=20260928-04">
+  <link rel="stylesheet" href="./styles.css?v=20260929-02">
 </head>
 <body>
   <div class="app-shell">
-    <main class="content" id="content"></main>
+    <main class="content" id="content">
+      <section class="view active" data-view="home" aria-label="Início"></section>
+      <section class="view" data-view="history" aria-label="Histórico"></section>
+      <section class="view" data-view="analysis" aria-label="Análises"></section>
+      <section class="view" data-view="learning" aria-label="Aprendizado"></section>
+
+      <section class="view settings-view" data-view="settings" aria-label="Ajustes">
+        <div class="settings-content">
+          <section class="settings-section">
+            <h2 class="section-label">Tema</h2>
+            <div class="settings-card theme-mode-card">
+              <div class="theme-mode-segment" role="group" aria-label="Tema">
+                <button type="button" data-theme-choice="light">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.7"/></svg>
+                  <span>Claro</span>
+                </button>
+                <button type="button" data-theme-choice="system">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="6.7"/>
+                    <path d="M16.8 7.2 7.2 16.8"/>
+                    <path class="theme-system-fill" d="M16.8 7.2A6.8 6.8 0 0 1 7.2 16.8Z"/>
+                  </svg>
+                  <span>Sistema</span>
+                </button>
+                <button type="button" data-theme-choice="dark">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle class="theme-dark-fill" cx="12" cy="12" r="6.7"/></svg>
+                  <span>Escuro</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="settings-section">
+            <h2 class="section-label">Estilo visual</h2>
+            <div class="settings-card visual-style-card compact">
+              <div class="visual-style-picker" role="group" aria-label="Estilo visual">
+                <button type="button" class="visual-style-option" data-visual-style-mode="optimized">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="7"/>
+                    <path d="M5 12h14M12 5v14"/>
+                  </svg>
+                  <strong>Otimizado</strong>
+                </button>
+                <button type="button" class="visual-style-option" data-visual-style-mode="ultra">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m12 3 1.4 4.1L17.5 8.5l-4.1 1.4L12 14l-1.4-4.1-4.1-1.4 4.1-1.4L12 3Z"/>
+                    <path d="m19 14 .8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14Z"/>
+                  </svg>
+                  <strong>Ultra</strong>
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
 
     <nav class="tab-bar" aria-label="Navegação principal">
       <span class="tab-bubble" aria-hidden="true"></span>
@@ -40,7 +95,7 @@
     </nav>
   </div>
 
-  <script src="./navicons.js?v=20260928-04"></script>
-  <script src="./app.js?v=20260928-04"></script>
+  <script src="./navicons.js?v=20260929-02"></script>
+  <script src="./app.js?v=20260929-02"></script>
 </body>
 </html>
