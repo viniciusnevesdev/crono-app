@@ -1,11 +1,33 @@
 :root{
-  color-scheme:light dark;
-  --bg:#f5f5f7;
+  color-scheme:light;
+  --bg:#f2f2f6;
+  --card:#ffffff;
   --text:#111114;
+  --secondary:#8e8e93;
+  --line:rgba(60,60,67,.14);
+  --accent:#0a84ff;
+}
+
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#000000;
+  --card:#1c1c1e;
+  --text:#f5f5f7;
+  --secondary:#9b9ba1;
+  --line:rgba(84,84,88,.55);
+  --accent:#0a84ff;
 }
 
 @media(prefers-color-scheme:dark){
-  :root{--bg:#000;--text:#f5f5f7}
+  html[data-theme="system"]{
+    color-scheme:dark;
+    --bg:#000000;
+    --card:#1c1c1e;
+    --text:#f5f5f7;
+    --secondary:#9b9ba1;
+    --line:rgba(84,84,88,.55);
+    --accent:#0a84ff;
+  }
 }
 
 *{box-sizing:border-box}
@@ -14,6 +36,7 @@ body{
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
   -webkit-font-smoothing:antialiased;
+  transition:background-color .18s ease,color .18s ease;
 }
 button{font:inherit;-webkit-tap-highlight-color:transparent}
 
@@ -28,6 +51,155 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   padding-bottom:calc(74px + env(safe-area-inset-bottom));
 }
 
+.view{
+  display:none;
+  min-height:calc(100dvh - 74px - env(safe-area-inset-bottom));
+}
+
+.view.active{display:block}
+
+/* Ajustes — baseado nos controles do Cronômetros Apresentação Beta. */
+.settings-content{
+  padding:calc(22px + env(safe-area-inset-top)) 0 30px;
+}
+
+.settings-section{
+  margin:0 0 22px;
+}
+
+.section-label{
+  margin:0 18px 8px;
+  color:var(--text);
+  font-size:16px;
+  line-height:20px;
+  font-weight:760;
+  text-align:left;
+}
+
+.settings-card{
+  margin:0;
+  background:var(--card);
+  border-radius:22px;
+  overflow:hidden;
+  border:1px solid var(--line);
+}
+
+.theme-mode-card{
+  padding:4px;
+}
+
+.theme-mode-segment{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:3px;
+  padding:0;
+}
+
+.theme-mode-segment button{
+  min-width:0;
+  min-height:44px;
+  border:0;
+  border-radius:18px;
+  background:transparent;
+  color:var(--secondary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:7px 5px;
+  font-size:13px;
+  line-height:16px;
+  font-weight:700;
+  transition:background-color .18s ease,color .18s ease,transform .15s ease,box-shadow .18s ease;
+}
+
+.theme-mode-segment button:active,
+.visual-style-option:active{transform:scale(.98)}
+
+.theme-mode-segment button.selected{
+  background:color-mix(in srgb,var(--accent) 12%,var(--card));
+  color:var(--accent);
+  box-shadow:0 1px 4px rgba(0,0,0,.12);
+}
+
+.theme-mode-segment svg,
+.visual-style-option svg{
+  width:19px;
+  height:19px;
+  flex:0 0 auto;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.theme-system-fill,
+.theme-dark-fill{
+  fill:currentColor;
+  stroke:none;
+  opacity:.9;
+}
+
+.visual-style-card.compact{
+  padding:4px;
+}
+
+.visual-style-picker{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:4px;
+}
+
+.visual-style-option{
+  min-width:0;
+  min-height:44px;
+  border:0;
+  border-radius:18px;
+  background:transparent;
+  color:var(--secondary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:7px 9px;
+  transition:background-color .18s ease,color .18s ease,transform .15s ease,box-shadow .18s ease;
+}
+
+.visual-style-option strong{
+  font-size:13px;
+  line-height:16px;
+  font-weight:720;
+}
+
+.visual-style-option.selected{
+  background:color-mix(in srgb,var(--accent) 12%,var(--card));
+  color:var(--accent);
+  box-shadow:0 1px 4px rgba(0,0,0,.12);
+}
+
+/* Ultra: a preferência já é global e afetará componentes futuros também. */
+html[data-visual-style="ultra"] body{
+  background:
+    radial-gradient(90% 44% at 6% -5%,color-mix(in srgb,var(--accent) 15%,transparent),transparent 63%),
+    radial-gradient(72% 38% at 96% 18%,color-mix(in srgb,#34c759 9%,transparent),transparent 66%),
+    var(--bg);
+  background-attachment:fixed;
+}
+
+html[data-visual-style="ultra"] .settings-card{
+  background:linear-gradient(
+    145deg,
+    color-mix(in srgb,var(--card) 94%,var(--accent) 6%),
+    color-mix(in srgb,var(--card) 88%,var(--accent) 12%)
+  );
+  border-color:color-mix(in srgb,var(--accent) 30%,var(--line));
+  box-shadow:0 10px 30px rgba(0,0,0,.08),0 0 22px color-mix(in srgb,var(--accent) 20%,transparent);
+  -webkit-backdrop-filter:blur(12px) saturate(125%);
+  backdrop-filter:blur(12px) saturate(125%);
+}
+
+/* Barra inferior — medidas do runtime atual do Mente. */
 .tab-bar{
   position:fixed;
   z-index:30;
@@ -92,6 +264,17 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
 .rm-spark-custom *{
   stroke:none!important;
   stroke-width:0!important;
+}
+
+html[data-visual-style="ultra"] .tab-bar{
+  box-shadow:
+    0 8px 16px 2px rgba(0,0,0,.19),
+    0 0 26px color-mix(in srgb,var(--accent) 24%,transparent)!important;
+}
+
+@media(min-width:481px){
+  .settings-content{padding-left:12px;padding-right:12px}
+  .settings-card{margin-left:0;margin-right:0}
 }
 
 @media(prefers-reduced-motion:reduce){
