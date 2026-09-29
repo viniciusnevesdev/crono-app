@@ -279,7 +279,11 @@
     }
 
     const todayItems=valid.filter(item=>sameLocalDay(item.date,new Date()));
-    const targetDate=(todayItems.at(-1)||valid.at(-1)).date;
+    const targetItem=todayItems.length
+      ? todayItems[todayItems.length-1]
+      : valid[valid.length-1];
+    if(!targetItem)return;
+    const targetDate=targetItem.date;
     const dayItems=valid.filter(item=>sameLocalDay(item.date,targetDate));
 
     label.textContent=dayLabel(targetDate);
@@ -481,22 +485,45 @@
     }
   }
 
+  function safeRun(label,fn){
+    try{
+      return fn();
+    }catch(error){
+      console.error(`Crono: falha em ${label}`,error);
+      return undefined;
+    }
+  }
+
   function switchTab(name){
+    const targetExists=[...document.querySelectorAll('.view')]
+      .some(view=>view.dataset.view===name);
+    if(!targetExists)return;
+
     document.querySelectorAll('.view').forEach(view=>{
       view.classList.toggle('active',view.dataset.view===name);
     });
     document.querySelectorAll('.tab-item').forEach(tab=>{
       tab.classList.toggle('selected',tab.dataset.tab===name);
     });
-    renderTabBar();
-    if(name==='history')renderChronology();
-    window.scrollTo({top:0,behavior:'instant'});
+
+    safeRun('barra de navegação',renderTabBar);
+    if(name==='history')safeRun('cronologia',renderChronology);
+
+    try{
+      window.scrollTo(0,0);
+    }catch{}
   }
 
-  hydrate();
-  applyPreferences();
-  updateEventSummary();
-  renderChronology();
+  // A navegação é conectada antes de qualquer renderização.
+  // Assim, um problema isolado em uma tela nunca trava as outras abas.
+  document.querySelectorAll('.tab-item').forEach(tab=>{
+    tab.addEventListener('click',()=>switchTab(tab.dataset.tab));
+  });
+
+  safeRun('ícones',hydrate);
+  safeRun('preferências',applyPreferences);
+  safeRun('resumo de eventos',updateEventSummary);
+  safeRun('cronologia inicial',renderChronology);
 
   document.getElementById('createEventButton')?.addEventListener('click',openEventSheet);
   document.getElementById('saveEventButton')?.addEventListener('click',createEvent);
@@ -523,7 +550,6 @@
     const release=()=>{tab.style.transform=''};
     tab.addEventListener('pointerup',release);
     tab.addEventListener('pointercancel',release);
-    tab.addEventListener('click',()=>switchTab(tab.dataset.tab));
   });
 
   document.querySelectorAll('[data-theme-choice]').forEach(button=>{
