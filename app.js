@@ -161,6 +161,20 @@
   }
 
   function paintSettings(){
+    const themeChoices=['light','system','dark'];
+    const visualChoices=['optimized','ultra'];
+
+    const themeSegment=document.querySelector('.theme-mode-segment');
+    const visualPicker=document.querySelector('.visual-style-picker');
+
+    if(themeSegment){
+      themeSegment.dataset.selectedIndex=String(Math.max(0,themeChoices.indexOf(settings.theme)));
+    }
+
+    if(visualPicker){
+      visualPicker.dataset.selectedIndex=String(Math.max(0,visualChoices.indexOf(settings.visualStyle)));
+    }
+
     document.querySelectorAll('[data-theme-choice]').forEach(button=>{
       const selected=button.dataset.themeChoice===settings.theme;
       button.classList.toggle('selected',selected);
