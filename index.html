@@ -12,11 +12,11 @@
   <link rel="stylesheet" href="./styles.css?v=20260929-08">
 </head>
 <body>
-  <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.1.6 • Cápsulas máximas</div>
+  <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.1.7 • Página Evento</div>
 
   <div class="app-shell">
     <main class="content" id="content">
-      <section class="view active" data-view="home" aria-label="Início"></section>
+      <section class="view active" data-view="event" aria-label="Adicionar evento"></section>
       <section class="view" data-view="history" aria-label="Histórico"></section>
       <section class="view" data-view="analysis" aria-label="Análises"></section>
       <section class="view" data-view="learning" aria-label="Aprendizado"></section>
@@ -80,8 +80,15 @@
     <nav class="tab-bar" aria-label="Navegação principal">
       <span class="tab-bubble" aria-hidden="true"></span>
 
-      <button class="tab-item selected" type="button" data-tab="home">
-        <span data-icon="home"></span><small>Início</small>
+      <button class="tab-item selected" type="button" data-tab="event">
+        <span>
+          <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 16.8516 16.4609" width="24" height="24" aria-hidden="true">
+            <g>
+              <rect height="16.4609" opacity="0" width="16.8516" x="0" y="0"/>
+              <path d="M8.98438 15.6797L8.98438 0.765625C8.98438 0.351562 8.64062 0 8.21875 0C7.80469 0 7.46094 0.351562 7.46094 0.765625L7.46094 15.6797C7.46094 16.0938 7.80469 16.4453 8.21875 16.4453C8.64062 16.4453 8.98438 16.0938 8.98438 15.6797ZM0.765625 8.98438L15.6797 8.98438C16.0938 8.98438 16.4453 8.64062 16.4453 8.22656C16.4453 7.80469 16.0938 7.46094 15.6797 7.46094L0.765625 7.46094C0.351562 7.46094 0 7.80469 0 8.22656C0 8.64062 0.351562 8.98438 0.765625 8.98438Z" fill="currentColor" fill-opacity="0.85"/>
+            </g>
+          </svg>
+        </span><small>Evento</small>
       </button>
 
       <button class="tab-item" type="button" data-tab="history">
@@ -102,8 +109,8 @@
     </nav>
   </div>
 
-  <script src="./version.js?v=0.1.6"></script>
+  <script src="./version.js?v=0.1.7"></script>
   <script src="./navicons.js?v=20260929-04"></script>
-  <script src="./app.js?v=20260929-05"></script>
+  <script src="./app.js?v=20260929-06"></script>
 </body>
 </html>
