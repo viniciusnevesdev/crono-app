@@ -10,10 +10,31 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Crono Beta">
+  <meta name="application-name" content="Crono Beta">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="msapplication-TileColor" content="#1677f2">
+  <meta name="msapplication-TileImage" content="../icons/icon-192.png?v=0.2.4-beta.1">
+  <meta name="msapplication-config" content="../browserconfig.xml?v=0.2.4-beta.1">
+  <meta property="og:title" content="Crono Beta">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://viniciusnevesdev.github.io/crono-app/beta/">
+  <meta property="og:image" content="https://viniciusnevesdev.github.io/crono-app/icons/icon-512.jpg?v=0.2.4-beta.1">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:image" content="https://viniciusnevesdev.github.io/crono-app/icons/icon-512.jpg?v=0.2.4-beta.1">
+  <link rel="icon" href="../favicon.ico?v=0.2.4-beta.1" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png?v=0.2.4-beta.1">
+  <link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192.png?v=0.2.4-beta.1">
+  <link rel="shortcut icon" href="../favicon.ico?v=0.2.4-beta.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon-180.png?v=0.2.4-beta.1">
+  <link rel="apple-touch-icon-precomposed" href="../apple-touch-icon.png?v=0.2.4-beta.1">
+  <link rel="image_src" href="../icons/icon-512.jpg?v=0.2.4-beta.1">
   <title>Crono Beta</title>
   <script>
     (() => {
-      const localVersion = '0.2.3-beta.1';
+      const localVersion = '0.2.4-beta.1';
       fetch('./latest.json?t=' + Date.now(), { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(latest => {
@@ -26,11 +47,11 @@
         .catch(() => {});
     })();
   </script>
-  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="manifest" href="./manifest.webmanifest?v=0.2.4-beta.1">
   <link rel="stylesheet" href="./styles.css?v=beta-002">
 </head>
 <body>
-  <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.2.3-beta.1 • Beta inicial</div>
+  <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.2.4-beta.1 • Ícone do app</div>
 
   <div class="app-shell">
     <main class="content" id="content">
