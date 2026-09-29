@@ -418,7 +418,7 @@ html[data-visual-style="ultra"] .tab-bar{
 .chrono-card{
   position:relative;
   width:100%;
-  min-height:0;
+  min-height:156px;
   border:1px solid var(--line);
   border-radius:32px;
   overflow:hidden;
@@ -426,52 +426,25 @@ html[data-visual-style="ultra"] .tab-bar{
   box-shadow:0 10px 30px rgba(0,0,0,.06);
 }
 
-.sleep-band{
-  position:relative;
-  min-height:64px;
+
+.chrono-empty{
+  min-height:156px;
+  padding:28px 22px;
   display:flex;
+  flex-direction:column;
   align-items:center;
   justify-content:center;
+  gap:5px;
   text-align:center;
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      color-mix(in srgb,var(--accent) 12%,var(--card)) 0 8px,
-      color-mix(in srgb,var(--accent) 5%,var(--card)) 8px 16px
-    );
 }
-
-.sleep-band-top{
-  height:var(--sleep-band-height,92px);
-  min-height:56px;
-  border-bottom:1px solid color-mix(in srgb,var(--accent) 16%,var(--line));
-  border-radius:31px 31px 24px 24px;
-}
-
-.sleep-band-bottom{
-  border-top:1px solid color-mix(in srgb,var(--accent) 16%,var(--line));
-  border-radius:24px 24px 31px 31px;
-}
-
-.sleep-band-copy{
-  display:grid;
-  gap:2px;
-  padding:10px 16px;
-  border-radius:999px;
-  background:color-mix(in srgb,var(--card) 78%,transparent);
-  -webkit-backdrop-filter:blur(8px);
-  backdrop-filter:blur(8px);
-}
-
-.sleep-band-copy strong{
+.chrono-empty strong{
   font-size:14px;
-  font-weight:760;
+  font-weight:740;
 }
-
-.sleep-band-copy small{
+.chrono-empty span{
   color:var(--secondary);
-  font-size:10.5px;
-  font-weight:620;
+  font-size:12px;
+  line-height:16px;
 }
 
 .chrono-flow{
@@ -562,14 +535,6 @@ html[data-visual-style="ultra"] .tab-bar{
   font-weight:740;
   font-variant-numeric:tabular-nums;
   box-shadow:0 1px 4px rgba(0,0,0,.06);
-}
-
-.chrono-note{
-  margin:9px 8px 0;
-  color:var(--secondary);
-  text-align:center;
-  font-size:11px;
-  line-height:15px;
 }
 
 html[data-theme="dark"] .chrono-card,
