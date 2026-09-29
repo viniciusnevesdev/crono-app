@@ -7,6 +7,7 @@
   }
 
   const STORAGE_KEY='crono-settings-v1';
+  const EVENTS_KEY='crono-events-v1';
   const DEFAULTS={theme:'system',visualStyle:'optimized'};
 
   const CURVES={
@@ -53,6 +54,21 @@
   }
 
   let settings=loadSettings();
+
+  function loadEvents(){
+    try{
+      const parsed=JSON.parse(localStorage.getItem(EVENTS_KEY)||'[]');
+      return Array.isArray(parsed)?parsed:[];
+    }catch{
+      return [];
+    }
+  }
+
+  let events=loadEvents();
+
+  function saveEvents(){
+    localStorage.setItem(EVENTS_KEY,JSON.stringify(events));
+  }
 
   function saveSettings(){
     localStorage.setItem(STORAGE_KEY,JSON.stringify(settings));
@@ -196,6 +212,152 @@
     renderTabBar();
   }
 
+  function formatEventDate(value){
+    const date=new Date(value);
+    if(Number.isNaN(date.getTime()))return '';
+    return new Intl.DateTimeFormat('pt-BR',{
+      day:'2-digit',month:'2-digit',year:'2-digit',
+      hour:'2-digit',minute:'2-digit'
+    }).format(date);
+  }
+
+  function updateEventSummary(){
+    const summary=document.getElementById('eventSummary');
+    if(!summary)return;
+    if(!events.length){
+      summary.textContent='Nenhum evento salvo ainda.';
+      return;
+    }
+    const latest=[...events].sort((a,b)=>new Date(b.at)-new Date(a.at))[0];
+    summary.textContent=`${events.length} ${events.length===1?'evento salvo':'eventos salvos'} • último: ${latest.title} — ${formatEventDate(latest.at)}`;
+  }
+
+  function toLocalDateTimeValue(date=new Date()){
+    const pad=n=>String(n).padStart(2,'0');
+    return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+
+  const eventSheet=document.getElementById('eventSheet');
+  const eventTitleInput=document.getElementById('eventTitleInput');
+  const eventDateTimeInput=document.getElementById('eventDateTimeInput');
+  const eventNotesInput=document.getElementById('eventNotesInput');
+
+  function openEventSheet(){
+    if(!eventSheet)return;
+    eventTitleInput.value='';
+    eventDateTimeInput.value=toLocalDateTimeValue();
+    eventNotesInput.value='';
+    eventSheet.hidden=false;
+    requestAnimationFrame(()=>eventTitleInput.focus());
+  }
+
+  function closeEventSheet(){
+    if(eventSheet)eventSheet.hidden=true;
+  }
+
+  let toastTimer=null;
+  function toast(message){
+    const el=document.getElementById('appToast');
+    if(!el)return;
+    el.textContent=message;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+  }
+
+  function createEvent(){
+    const title=eventTitleInput?.value.trim()||'';
+    const rawDate=eventDateTimeInput?.value||'';
+    if(!title){
+      eventTitleInput?.focus();
+      toast('Digite o nome do evento.');
+      return;
+    }
+    const at=new Date(rawDate);
+    if(Number.isNaN(at.getTime())){
+      toast('Escolha uma data e hora válidas.');
+      return;
+    }
+    events.push({
+      id:(crypto.randomUUID?.()||`evt-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+      type:'event',
+      title,
+      at:at.toISOString(),
+      notes:eventNotesInput?.value.trim()||'',
+      createdAt:new Date().toISOString()
+    });
+    events.sort((a,b)=>new Date(a.at)-new Date(b.at));
+    saveEvents();
+    updateEventSummary();
+    closeEventSheet();
+    toast('Evento salvo.');
+  }
+
+  async function exportBackup(){
+    const backup={
+      app:'Crono',
+      backupVersion:1,
+      exportedAt:new Date().toISOString(),
+      release:RELEASE.version,
+      data:{
+        events,
+        settings
+      }
+    };
+    const json=JSON.stringify(backup,null,2);
+    const date=new Date();
+    const pad=n=>String(n).padStart(2,'0');
+    const fileName=`crono-backup-${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}.json`;
+    const file=new File([json],fileName,{type:'application/json'});
+
+    try{
+      if(navigator.canShare?.({files:[file]})&&navigator.share){
+        await navigator.share({files:[file],title:'Backup do Crono'});
+        toast('Backup preparado.');
+        return;
+      }
+    }catch(error){
+      if(error?.name==='AbortError')return;
+    }
+
+    const url=URL.createObjectURL(file);
+    const link=document.createElement('a');
+    link.href=url;
+    link.download=fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    toast('Backup exportado.');
+  }
+
+  async function importBackupFile(file){
+    if(!file)return;
+    try{
+      const text=await file.text();
+      const backup=JSON.parse(text);
+      if(backup?.app!=='Crono'||backup?.backupVersion!==1||!backup?.data||!Array.isArray(backup.data.events)){
+        throw new Error('Formato inválido');
+      }
+      const importedEvents=backup.data.events.filter(event=>
+        event&&typeof event.title==='string'&&typeof event.at==='string'
+      );
+      if(!confirm(`Importar este backup? Os dados atuais serão substituídos por ${importedEvents.length} evento(s).`)){
+        return;
+      }
+      events=importedEvents;
+      settings={...DEFAULTS,...(backup.data.settings||{})};
+      saveEvents();
+      saveSettings();
+      applyPreferences();
+      updateEventSummary();
+      toast('Backup importado.');
+    }catch(error){
+      console.error(error);
+      toast('Backup inválido ou não pôde ser lido.');
+    }
+  }
+
   function switchTab(name){
     document.querySelectorAll('.view').forEach(view=>{
       view.classList.toggle('active',view.dataset.view===name);
@@ -209,6 +371,27 @@
 
   hydrate();
   applyPreferences();
+  updateEventSummary();
+
+  document.getElementById('createEventButton')?.addEventListener('click',openEventSheet);
+  document.getElementById('saveEventButton')?.addEventListener('click',createEvent);
+  document.querySelectorAll('[data-close-event-sheet]').forEach(el=>el.addEventListener('click',closeEventSheet));
+
+  document.getElementById('eventTitleInput')?.addEventListener('keydown',event=>{
+    if(event.key==='Enter')createEvent();
+  });
+
+  document.getElementById('exportBackupButton')?.addEventListener('click',exportBackup);
+
+  const backupFileInput=document.getElementById('backupFileInput');
+  document.getElementById('importBackupButton')?.addEventListener('click',()=>{
+    backupFileInput?.click();
+  });
+  backupFileInput?.addEventListener('change',async()=>{
+    const file=backupFileInput.files?.[0];
+    await importBackupFile(file);
+    backupFileInput.value='';
+  });
 
   document.querySelectorAll('.tab-item').forEach(tab=>{
     tab.addEventListener('pointerdown',()=>{tab.style.transform=`scale(${cfg().pressScale})`});
