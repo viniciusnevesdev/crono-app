@@ -34,7 +34,7 @@
   <title>Crono</title>
   <script>
     (() => {
-      const localVersion = '0.2.4';
+      const localVersion = '0.3.0';
       fetch('./latest.json?t=' + Date.now(), { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(latest => {
@@ -47,8 +47,8 @@
         .catch(() => {});
     })();
   </script>
-  <link rel="manifest" href="./manifest.webmanifest?v=0.2.4">
-  <link rel="stylesheet" href="./styles.css?v=20260929-13">
+  <link rel="manifest" href="./manifest.webmanifest?v=0.3.0">
+  <link rel="stylesheet" href="./styles.css?v=20261004-01">
 </head>
 <body>
   <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.2.4 • Ícone do app</div>
@@ -73,99 +73,43 @@
           </button>
 
           <div class="event-summary" id="eventSummary" aria-live="polite"></div>
+
+          <section class="today-section" aria-labelledby="todayHeading">
+            <div class="day-section-heading">
+              <div>
+                <p class="day-eyebrow">Hoje</p>
+                <h2 id="todayHeading">Seu dia em 24 horas</h2>
+              </div>
+              <div class="timeline-zoom" role="group" aria-label="Zoom da linha do tempo de hoje">
+                <button type="button" data-timeline-zoom="1" class="selected">1×</button>
+                <button type="button" data-timeline-zoom="2">2×</button>
+                <button type="button" data-timeline-zoom="4">4×</button>
+              </div>
+            </div>
+            <div id="todayTimeline"></div>
+          </section>
+
+          <section class="yesterday-section" id="yesterdaySection" aria-labelledby="yesterdayHeading">
+            <div class="day-section-heading compact">
+              <div>
+                <p class="day-eyebrow">Ontem</p>
+                <h2 id="yesterdayHeading">Contexto recente</h2>
+              </div>
+            </div>
+            <div id="yesterdayTimeline"></div>
+          </section>
         </div>
       </section>
       <section class="view history-view" data-view="history" aria-label="Histórico">
         <div class="history-page">
           <header class="history-header">
-            <h1>Cronologia</h1>
-            <div class="history-day-label">Hoje</div>
+            <div>
+              <p class="day-eyebrow">Histórico</p>
+              <h1>Todos os dias</h1>
+            </div>
+            <div class="history-day-label" id="historyCount"></div>
           </header>
-
-          <article class="chrono-card" aria-label="Cronologia de 24 horas">
-            <div class="chrono-day-brace" aria-hidden="true">
-              <span>24 h</span>
-            </div>
-
-            <div class="sleep-band sleep-band-top">
-              <div class="sleep-band-copy">
-                <strong>Dormindo</strong>
-                <small>00:00 — 08:18</small>
-              </div>
-            </div>
-
-            <div class="chrono-flow">
-              <div class="chrono-event">
-                <span class="event-time">08:18</span>
-                <span class="event-dot"></span>
-                <strong>Acordei</strong>
-              </div>
-
-              <div class="chrono-gap">
-                <span class="gap-line"></span>
-                <span class="gap-value">3 h 02 min</span>
-              </div>
-
-              <div class="chrono-event">
-                <span class="event-time">11:20</span>
-                <span class="event-dot"></span>
-                <strong>Almoço</strong>
-              </div>
-
-              <div class="chrono-gap">
-                <span class="gap-line"></span>
-                <span class="gap-value">3 h</span>
-              </div>
-
-              <div class="chrono-event">
-                <span class="event-time">14:20</span>
-                <span class="event-dot"></span>
-                <strong>Fui ao mercado</strong>
-              </div>
-
-              <div class="chrono-gap">
-                <span class="gap-line"></span>
-                <span class="gap-value">4 h</span>
-              </div>
-
-              <div class="chrono-event">
-                <span class="event-time">18:20</span>
-                <span class="event-dot"></span>
-                <strong>Banho</strong>
-              </div>
-
-              <div class="chrono-gap">
-                <span class="gap-line"></span>
-                <span class="gap-value">1 h</span>
-              </div>
-
-              <div class="chrono-event">
-                <span class="event-time">19:20</span>
-                <span class="event-dot"></span>
-                <strong>Jantar</strong>
-              </div>
-
-              <div class="chrono-gap">
-                <span class="gap-line"></span>
-                <span class="gap-value">4 h 40 min</span>
-              </div>
-
-              <div class="chrono-event">
-                <span class="event-time">00:00</span>
-                <span class="event-dot"></span>
-                <strong>Dormi</strong>
-              </div>
-            </div>
-
-            <div class="sleep-band sleep-band-bottom">
-              <div class="sleep-band-copy">
-                <strong>Dormindo</strong>
-                <small>início do próximo dia</small>
-              </div>
-            </div>
-          </article>
-
-          <p class="chrono-note">Os tempos indicam o intervalo entre um registro e o próximo.</p>
+          <div class="history-list" id="historyList"></div>
         </div>
       </section>
       <section class="view" data-view="analysis" aria-label="Análises"></section>
@@ -319,8 +263,8 @@
     </nav>
   </div>
 
-  <script src="./version.js?v=0.2.4"></script>
+  <script src="./version.js?v=0.3.0"></script>
   <script src="./navicons.js?v=20260929-05"></script>
-  <script src="./app.js?v=20260929-08"></script>
+  <script src="./app.js?v=20261004-01"></script>
 </body>
 </html>
