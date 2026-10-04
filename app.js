@@ -65,6 +65,8 @@
   }
 
   let events=loadEvents();
+  let timelineZoom=1;
+  let selectedEventId=null;
 
   function saveEvents(){
     localStorage.setItem(EVENTS_KEY,JSON.stringify(events));
@@ -232,6 +234,175 @@
     summary.textContent=`${events.length} ${events.length===1?'evento salvo':'eventos salvos'} • último: ${latest.title} — ${formatEventDate(latest.at)}`;
   }
 
+  const DAY_MS=86400000;
+  const TIMELINE_BASE_HEIGHT=720;
+  const COLLISION_MINUTES=24;
+
+  function startOfLocalDay(date=new Date()){
+    return new Date(date.getFullYear(),date.getMonth(),date.getDate());
+  }
+
+  function dayKey(date){
+    const pad=n=>String(n).padStart(2,'0');
+    return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
+  }
+
+  function eventsForDay(date){
+    const key=dayKey(date);
+    return events
+      .filter(event=>{
+        const at=new Date(event.at);
+        return !Number.isNaN(at.getTime())&&dayKey(at)===key;
+      })
+      .sort((a,b)=>new Date(a.at)-new Date(b.at));
+  }
+
+  function minutesOfDay(value){
+    const date=new Date(value);
+    return date.getHours()*60+date.getMinutes()+date.getSeconds()/60;
+  }
+
+  function formatTime(value){
+    const date=new Date(value);
+    return new Intl.DateTimeFormat('pt-BR',{hour:'2-digit',minute:'2-digit'}).format(date);
+  }
+
+  function formatDayTitle(date){
+    const today=startOfLocalDay();
+    const target=startOfLocalDay(date);
+    const delta=Math.round((today-target)/DAY_MS);
+    if(delta===0)return 'Hoje';
+    if(delta===1)return 'Ontem';
+    return new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'numeric',month:'long'}).format(date);
+  }
+
+  function escapeHtml(value=''){
+    return String(value).replace(/[&<>"']/g,char=>({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+    })[char]);
+  }
+
+  function renderTimeline(target,date,{zoom=1,compact=false}={}){
+    if(!target)return;
+    const dayEvents=eventsForDay(date);
+    const height=Math.round(TIMELINE_BASE_HEIGHT*zoom);
+    let collisionRun=0;
+    let previousMinutes=-Infinity;
+
+    const eventMarkup=dayEvents.map(event=>{
+      const minute=minutesOfDay(event.at);
+      collisionRun=minute-previousMinutes<COLLISION_MINUTES?collisionRun+1:0;
+      previousMinutes=minute;
+      const side=collisionRun%2===0?'right':'left';
+      const top=(minute/1440)*height;
+      return `<button class="timeline-event side-${side}" type="button" data-event-id="${escapeHtml(event.id)}" style="top:${top}px" aria-label="${escapeHtml(event.title)}, ${formatTime(event.at)}">
+        <span class="timeline-event-dot" aria-hidden="true"></span>
+        <span class="timeline-event-copy">
+          <time>${formatTime(event.at)}</time>
+          <strong>${escapeHtml(event.title)}</strong>
+        </span>
+      </button>`;
+    }).join('');
+
+    const hourLabels=[0,6,12,18,24].map(hour=>{
+      const top=(hour/24)*height;
+      const label=hour===24?'24:00':`${String(hour).padStart(2,'0')}:00`;
+      return `<span class="timeline-hour" style="top:${top}px">${label}</span>`;
+    }).join('');
+
+    target.innerHTML=`<article class="day-timeline-card${compact?' compact':''}" data-day="${dayKey(date)}">
+      <div class="timeline-canvas" style="height:${height}px">
+        <div class="timeline-axis" aria-hidden="true"></div>
+        ${hourLabels}
+        ${eventMarkup}
+        ${dayEvents.length?'':`<div class="timeline-empty">Nenhum registro neste dia</div>`}
+      </div>
+    </article>`;
+
+    target.querySelectorAll('[data-event-id]').forEach(button=>{
+      button.addEventListener('click',()=>openEventDetails(button.dataset.eventId));
+    });
+  }
+
+  function renderHomeTimelines(){
+    const today=startOfLocalDay();
+    const yesterday=new Date(today);
+    yesterday.setDate(yesterday.getDate()-1);
+    renderTimeline(document.getElementById('todayTimeline'),today,{zoom:timelineZoom});
+    renderTimeline(document.getElementById('yesterdayTimeline'),yesterday,{zoom:1,compact:true});
+    document.querySelectorAll('[data-timeline-zoom]').forEach(button=>{
+      button.classList.toggle('selected',Number(button.dataset.timelineZoom)===timelineZoom);
+    });
+  }
+
+  function renderHistory(){
+    const list=document.getElementById('historyList');
+    if(!list)return;
+    const today=startOfLocalDay();
+    const dates=[...new Set(events.map(event=>{
+      const date=new Date(event.at);
+      return Number.isNaN(date.getTime())?null:dayKey(date);
+    }).filter(Boolean))]
+      .map(key=>new Date(`${key}T12:00:00`))
+      .filter(date=>startOfLocalDay(date)<today)
+      .sort((a,b)=>b-a);
+
+    const count=document.getElementById('historyCount');
+    if(count)count.textContent=dates.length?`${dates.length} ${dates.length===1?'dia':'dias'}`:'';
+
+    if(!dates.length){
+      list.innerHTML='<div class="history-empty">Os dias anteriores com registros aparecerão aqui.</div>';
+      return;
+    }
+
+    list.innerHTML=dates.map(date=>`<section class="history-day">
+      <button class="history-day-button" type="button" data-history-day="${dayKey(date)}" aria-expanded="false">
+        <span>${escapeHtml(formatDayTitle(date))}</span>
+        <small>${eventsForDay(date).length} ${eventsForDay(date).length===1?'evento':'eventos'}</small>
+      </button>
+      <div class="history-day-timeline" data-history-timeline="${dayKey(date)}" hidden></div>
+    </section>`).join('');
+
+    list.querySelectorAll('[data-history-day]').forEach(button=>{
+      button.addEventListener('click',()=>{
+        const key=button.dataset.historyDay;
+        const holder=list.querySelector(`[data-history-timeline="${key}"]`);
+        const opening=holder.hidden;
+        holder.hidden=!opening;
+        button.setAttribute('aria-expanded',String(opening));
+        if(opening&&!holder.dataset.rendered){
+          renderTimeline(holder,new Date(`${key}T12:00:00`),{zoom:1});
+          holder.dataset.rendered='true';
+        }
+      });
+    });
+  }
+
+  function renderChronology(){
+    renderHomeTimelines();
+    renderHistory();
+  }
+
+  function openEventDetails(id){
+    const event=events.find(item=>item.id===id);
+    if(!event)return;
+    selectedEventId=id;
+    const sheet=document.getElementById('eventDetailsSheet');
+    if(!sheet)return;
+    document.getElementById('eventDetailsTitle').textContent=event.title;
+    document.getElementById('eventDetailsTime').textContent=formatEventDate(event.at);
+    const notes=document.getElementById('eventDetailsNotes');
+    notes.textContent=event.notes||'Sem descrição adicional.';
+    notes.classList.toggle('muted',!event.notes);
+    sheet.hidden=false;
+  }
+
+  function closeEventDetails(){
+    selectedEventId=null;
+    const sheet=document.getElementById('eventDetailsSheet');
+    if(sheet)sheet.hidden=true;
+  }
+
   function toLocalDateTimeValue(date=new Date()){
     const pad=n=>String(n).padStart(2,'0');
     return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
@@ -289,6 +460,7 @@
     events.sort((a,b)=>new Date(a.at)-new Date(b.at));
     saveEvents();
     updateEventSummary();
+    renderChronology();
     closeEventSheet();
     toast('Evento salvo.');
   }
@@ -351,6 +523,7 @@
       saveSettings();
       applyPreferences();
       updateEventSummary();
+      renderChronology();
       toast('Backup importado.');
     }catch(error){
       console.error(error);
@@ -366,14 +539,23 @@
       tab.classList.toggle('selected',tab.dataset.tab===name);
     });
     renderTabBar();
+    if(name==='event'||name==='history')renderChronology();
     window.scrollTo({top:0,behavior:'instant'});
   }
 
   hydrate();
   applyPreferences();
   updateEventSummary();
+  renderChronology();
 
   document.getElementById('createEventButton')?.addEventListener('click',openEventSheet);
+  document.querySelectorAll('[data-timeline-zoom]').forEach(button=>{
+    button.addEventListener('click',()=>{
+      timelineZoom=Number(button.dataset.timelineZoom)||1;
+      renderHomeTimelines();
+    });
+  });
+  document.querySelectorAll('[data-close-event-details]').forEach(el=>el.addEventListener('click',closeEventDetails));
   document.getElementById('saveEventButton')?.addEventListener('click',createEvent);
   document.querySelectorAll('[data-close-event-sheet]').forEach(el=>el.addEventListener('click',closeEventSheet));
 
