@@ -933,3 +933,8 @@ html[data-visual-style="ultra"] .day-timeline-card{border-color:color-mix(in srg
   .timeline-event.side-left .timeline-event-copy{right:calc(61% + 8px)}
   .timeline-event-copy strong{font-size:11px}
 }
+
+/* O eixo representa o dia civil completo, nunca estado/atividade. */
+.timeline-axis{
+  background:#8e8e93 !important;
+}
