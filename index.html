@@ -228,6 +228,22 @@
       </section>
     </div>
 
+    <div class="event-sheet-wrap" id="eventDetailsSheet" hidden>
+      <div class="event-sheet-backdrop" data-close-event-details></div>
+      <section class="event-sheet event-details-sheet" role="dialog" aria-modal="true" aria-labelledby="eventDetailsTitle">
+        <div class="event-sheet-head details-head">
+          <button class="sheet-text-button" type="button" data-close-event-details>Fechar</button>
+          <h2>Detalhes</h2>
+          <span></span>
+        </div>
+        <div class="event-details">
+          <time id="eventDetailsTime"></time>
+          <h3 id="eventDetailsTitle"></h3>
+          <p id="eventDetailsNotes"></p>
+        </div>
+      </section>
+    </div>
+
     <div class="app-toast" id="appToast" role="status" aria-live="polite"></div>
 
     <nav class="tab-bar" aria-label="Navegação principal">
