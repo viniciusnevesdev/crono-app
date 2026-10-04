@@ -460,7 +460,6 @@
     events.sort((a,b)=>new Date(a.at)-new Date(b.at));
     saveEvents();
     updateEventSummary();
-  renderChronology();
     renderChronology();
     closeEventSheet();
     toast('Evento salvo.');
@@ -547,6 +546,7 @@
   hydrate();
   applyPreferences();
   updateEventSummary();
+  renderChronology();
 
   document.getElementById('createEventButton')?.addEventListener('click',openEventSheet);
   document.querySelectorAll('[data-timeline-zoom]').forEach(button=>{
