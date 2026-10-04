@@ -339,19 +339,25 @@
     const list=document.getElementById('historyList');
     if(!list)return;
     const today=startOfLocalDay();
-    const dates=[...new Set(events.map(event=>{
-      const date=new Date(event.at);
-      return Number.isNaN(date.getTime())?null:dayKey(date);
-    }).filter(Boolean))]
-      .map(key=>new Date(`${key}T12:00:00`))
-      .filter(date=>startOfLocalDay(date)<today)
-      .sort((a,b)=>b-a);
+    const validDates=events.map(event=>new Date(event.at)).filter(date=>!Number.isNaN(date.getTime()));
+    const earliest=validDates.length
+      ? startOfLocalDay(new Date(Math.min(...validDates.map(date=>date.getTime()))))
+      : null;
+    const dates=[];
+    if(earliest&&earliest<today){
+      const cursor=new Date(today);
+      cursor.setDate(cursor.getDate()-1);
+      while(cursor>=earliest){
+        dates.push(new Date(cursor));
+        cursor.setDate(cursor.getDate()-1);
+      }
+    }
 
     const count=document.getElementById('historyCount');
     if(count)count.textContent=dates.length?`${dates.length} ${dates.length===1?'dia':'dias'}`:'';
 
     if(!dates.length){
-      list.innerHTML='<div class="history-empty">Os dias anteriores com registros aparecerão aqui.</div>';
+      list.innerHTML='<div class="history-empty">Quando existir um primeiro registro, todos os dias seguintes aparecerão aqui — inclusive os dias totalmente vazios.</div>';
       return;
     }
 
