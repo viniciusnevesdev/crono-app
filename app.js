@@ -269,6 +269,16 @@
     return new Intl.DateTimeFormat('pt-BR',{hour:'2-digit',minute:'2-digit'}).format(date);
   }
 
+  function formatElapsedDuration(milliseconds){
+    const totalMinutes=Math.max(0,Math.round(milliseconds/60000));
+    if(totalMinutes<1)return 'menos de 1 min';
+    const hours=Math.floor(totalMinutes/60);
+    const minutes=totalMinutes%60;
+    if(hours&&minutes)return `${hours} h ${minutes} min`;
+    if(hours)return `${hours} h`;
+    return `${minutes} min`;
+  }
+
   function formatDayTitle(date){
     const today=startOfLocalDay();
     const target=startOfLocalDay(date);
@@ -396,17 +406,31 @@
       </button>`;
     }).join('');
 
+    const gapMarkup=dayEvents.slice(1).map((event,index)=>{
+      const previous=dayEvents[index];
+      const previousAt=new Date(previous.at);
+      const currentAt=new Date(event.at);
+      const elapsed=currentAt-previousAt;
+      if(!(elapsed>0))return '';
+      const previousMinute=minutesOfDay(previous.at);
+      const currentMinute=minutesOfDay(event.at);
+      const top=(((previousMinute+currentMinute)/2)/scaleMinutes)*height;
+      const label=formatElapsedDuration(elapsed);
+      return `<div class="timeline-gap" style="top:${top}px" aria-label="${escapeHtml(label)} entre ${escapeHtml(previous.title)} e ${escapeHtml(event.title)}"><span class="timeline-gap-value">${escapeHtml(label)}</span></div>`;
+    }).join('');
+
     const hourLabels=[0,6,12,18,24].filter(hour=>hour*60<=endMinutes).map(hour=>{
       const top=((hour*60)/scaleMinutes)*height;
       const label=hour===24?'24:00':`${String(hour).padStart(2,'0')}:00`;
       return `<span class="timeline-hour" style="top:${top}px">${label}</span>`;
     }).join('');
 
-    target.innerHTML=`<article class="day-timeline-card${compact?' compact':''}" data-day="${dayKey(date)}">
+    target.innerHTML=`<article class="day-timeline-card${compact?' compact':''}${currentDay?' current-day':''}" data-day="${dayKey(date)}">
       <div class="timeline-canvas" style="height:${height}px">
         <div class="timeline-axis" aria-hidden="true"></div>
         ${sleepMarkup}
         ${hourLabels}
+        ${gapMarkup}
         ${eventMarkup}
         ${dayEvents.length?'':`<div class="timeline-empty">Nenhum registro neste dia</div>`}
       </div>
