@@ -33,7 +33,7 @@
   <link rel="image_src" href="./icons/icon-512.jpg?v=0.2.4">
   <title>Crono</title>
   <link rel="manifest" href="./manifest.webmanifest?v=0.3.0">
-  <link rel="stylesheet" href="./styles.css?v=20261004-02">
+  <link rel="stylesheet" href="./styles.css?v=20261004-03">
 </head>
 <body>
   <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.2.4 • Ícone do app</div>
@@ -46,7 +46,8 @@
             <h1>Evento</h1>
           </header>
 
-          <div class="quick-actions" aria-label="Ações rápidas">
+          <div class="quick-action-row" aria-label="Ações rápidas">
+            <div class="quick-actions">
             <button class="sleep-action sleep-start-action" id="sleepStartButton" type="button">
               <span class="sleep-action-icon" aria-hidden="true">☾</span>
               <span>Vou dormir</span>
@@ -55,9 +56,9 @@
               <span class="sleep-action-icon" aria-hidden="true">☀︎</span>
               <span>Acordei</span>
             </button>
-          </div>
+            </div>
 
-          <button class="primary-action event-create-button" id="createEventButton" type="button">
+            <button class="primary-action event-create-button" id="createEventButton" type="button">
             <span class="action-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 20.7578 20.3672" width="24" height="24" aria-hidden="true">
               <g>
                 <rect height="20.3672" opacity="0" width="20.7578" x="0" y="0"/>
@@ -66,7 +67,8 @@
               </g>
             </svg></span>
             <span>Criar evento</span>
-          </button>
+            </button>
+          </div>
 
           <div class="event-summary" id="eventSummary" aria-live="polite"></div>
 
@@ -279,7 +281,7 @@
     </nav>
   </div>
 
-  <script src="./version.js?v=0.3.4"></script>
+  <script src="./version.js?v=0.3.5"></script>
   <script src="./navicons.js?v=20260929-05"></script>
   <script src="./app.js?v=20261004-02"></script>
 </body>
