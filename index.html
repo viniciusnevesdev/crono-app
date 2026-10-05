@@ -32,23 +32,8 @@
   <link rel="apple-touch-icon-precomposed" href="./apple-touch-icon.png?v=0.2.4">
   <link rel="image_src" href="./icons/icon-512.jpg?v=0.2.4">
   <title>Crono</title>
-  <script>
-    (() => {
-      const localVersion = '0.3.0';
-      fetch('./latest.json?t=' + Date.now(), { cache: 'no-store' })
-        .then(response => response.ok ? response.json() : null)
-        .then(latest => {
-          if (!latest?.version || latest.version === localVersion) return;
-          const url = new URL(location.href);
-          url.searchParams.set('v', latest.version);
-          url.searchParams.set('refresh', Date.now());
-          location.replace(url.toString());
-        })
-        .catch(() => {});
-    })();
-  </script>
   <link rel="manifest" href="./manifest.webmanifest?v=0.3.0">
-  <link rel="stylesheet" href="./styles.css?v=20261004-01">
+  <link rel="stylesheet" href="./styles.css?v=20261004-02">
 </head>
 <body>
   <div class="version-badge" id="versionBadge" aria-label="Versão do aplicativo">v0.2.4 • Ícone do app</div>
@@ -294,7 +279,7 @@
     </nav>
   </div>
 
-  <script src="./version.js?v=0.3.3"></script>
+  <script src="./version.js?v=0.3.4"></script>
   <script src="./navicons.js?v=20260929-05"></script>
   <script src="./app.js?v=20261004-02"></script>
 </body>
