@@ -944,6 +944,9 @@ html[data-visual-style="ultra"] .day-timeline-card{border-color:color-mix(in srg
 
 /* Registro explícito de sono */
 .quick-actions{width:calc(100% - 36px);margin:0 auto 10px}
+.quick-action-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;width:calc(100% - 36px);margin:0 auto 10px}
+.quick-action-row .quick-actions{width:auto;margin:0}
+.quick-action-row .event-create-button{width:100%;min-width:0;min-height:48px;padding:9px 10px;font-size:14px}
 .sleep-action{width:100%;min-height:48px;border:0;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:9px;padding:9px 18px;font-size:14px;font-weight:760}
 .sleep-action[hidden]{display:none}
 .sleep-start-action{background:#6f4bb8;color:#fff;box-shadow:0 7px 18px rgba(111,75,184,.2)}
