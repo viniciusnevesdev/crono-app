@@ -67,6 +67,7 @@
   let events=loadEvents();
   let timelineZoom=1;
   let selectedEventId=null;
+  let editingEventId=null;
 
   function saveEvents(){
     localStorage.setItem(EVENTS_KEY,JSON.stringify(events));
@@ -478,6 +479,8 @@
     const notes=document.getElementById('eventDetailsNotes');
     notes.textContent=event.notes||'Sem descrição adicional.';
     notes.classList.toggle('muted',!event.notes);
+    const actions=document.getElementById('eventDetailActions');
+    if(actions)actions.hidden=event.type!=='event';
     sheet.hidden=false;
   }
 
@@ -499,6 +502,8 @@
 
   function openEventSheet(){
     if(!eventSheet)return;
+    editingEventId=null;
+    document.getElementById('eventSheetTitle').textContent='Novo evento';
     eventTitleInput.value='';
     eventDateTimeInput.value=toLocalDateTimeValue();
     eventNotesInput.value='';
@@ -507,7 +512,21 @@
   }
 
   function closeEventSheet(){
+    editingEventId=null;
     if(eventSheet)eventSheet.hidden=true;
+  }
+
+  function openEditEventSheet(){
+    const event=events.find(item=>item.id===selectedEventId);
+    if(!event||event.type!=='event')return;
+    editingEventId=event.id;
+    document.getElementById('eventSheetTitle').textContent='Editar evento';
+    eventTitleInput.value=event.title;
+    eventDateTimeInput.value=toLocalDateTimeValue(new Date(event.at));
+    eventNotesInput.value=event.notes||'';
+    closeEventDetails();
+    eventSheet.hidden=false;
+    requestAnimationFrame(()=>eventTitleInput.focus());
   }
 
   let toastTimer=null;
@@ -533,20 +552,39 @@
       toast('Escolha uma data e hora válidas.');
       return;
     }
-    events.push({
-      id:(crypto.randomUUID?.()||`evt-${Date.now()}-${Math.random().toString(16).slice(2)}`),
-      type:'event',
-      title,
-      at:at.toISOString(),
-      notes:eventNotesInput?.value.trim()||'',
-      createdAt:new Date().toISOString()
-    });
+    const existing=editingEventId&&events.find(item=>item.id===editingEventId);
+    if(existing){
+      existing.title=title;
+      existing.at=at.toISOString();
+      existing.notes=eventNotesInput?.value.trim()||'';
+    }else{
+      events.push({
+        id:(crypto.randomUUID?.()||`evt-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+        type:'event',
+        title,
+        at:at.toISOString(),
+        notes:eventNotesInput?.value.trim()||'',
+        createdAt:new Date().toISOString()
+      });
+    }
     events.sort((a,b)=>new Date(a.at)-new Date(b.at));
     saveEvents();
     updateEventSummary();
     renderChronology();
     closeEventSheet();
-    toast('Evento salvo.');
+    toast(existing?'Evento atualizado.':'Evento salvo.');
+  }
+
+  function deleteSelectedEvent(){
+    const event=events.find(item=>item.id===selectedEventId);
+    if(!event||event.type!=='event')return;
+    if(!confirm(`Excluir “${event.title}”?`))return;
+    events=events.filter(item=>item.id!==event.id);
+    saveEvents();
+    updateEventSummary();
+    renderChronology();
+    closeEventDetails();
+    toast('Evento excluído.');
   }
 
   async function exportBackup(){
@@ -642,6 +680,8 @@
     });
   });
   document.querySelectorAll('[data-close-event-details]').forEach(el=>el.addEventListener('click',closeEventDetails));
+  document.getElementById('editEventButton')?.addEventListener('click',openEditEventSheet);
+  document.getElementById('deleteEventButton')?.addEventListener('click',deleteSelectedEvent);
   document.getElementById('saveEventButton')?.addEventListener('click',createEvent);
   document.querySelectorAll('[data-close-event-sheet]').forEach(el=>el.addEventListener('click',closeEventSheet));
 
