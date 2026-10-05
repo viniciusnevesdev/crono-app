@@ -480,7 +480,7 @@
     notes.textContent=event.notes||'Sem descrição adicional.';
     notes.classList.toggle('muted',!event.notes);
     const actions=document.getElementById('eventDetailActions');
-    if(actions)actions.hidden=event.type!=='event';
+    if(actions)actions.hidden=false;
     sheet.hidden=false;
   }
 
@@ -518,7 +518,7 @@
 
   function openEditEventSheet(){
     const event=events.find(item=>item.id===selectedEventId);
-    if(!event||event.type!=='event')return;
+    if(!event)return;
     editingEventId=event.id;
     document.getElementById('eventSheetTitle').textContent='Editar evento';
     eventTitleInput.value=event.title;
@@ -577,8 +577,11 @@
 
   function deleteSelectedEvent(){
     const event=events.find(item=>item.id===selectedEventId);
-    if(!event||event.type!=='event')return;
-    if(!confirm(`Excluir “${event.title}”?`))return;
+    if(!event)return;
+    const sleepWarning=event.type==='sleep_start'||event.type==='sleep_end'
+      ? '\n\nO período de sono será recalculado.'
+      : '';
+    if(!confirm(`Excluir “${event.title}”?${sleepWarning}`))return;
     events=events.filter(item=>item.id!==event.id);
     saveEvents();
     updateEventSummary();
