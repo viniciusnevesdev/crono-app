@@ -629,8 +629,16 @@ html[data-visual-style="ultra"] .chrono-card{
 
 /* Evento + backup funcional */
 .event-page{
+  display:flex;
+  flex-direction:column;
   padding:calc(54px + env(safe-area-inset-top)) 18px 28px;
 }
+
+.event-header{order:0}
+.yesterday-section{order:1}
+.quick-action-row{order:2}
+.event-summary{order:3}
+.today-section{order:4}
 
 .event-header{
   text-align:center;
