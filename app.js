@@ -369,11 +369,9 @@
     if(!target)return;
     const currentDay=throughNow&&dayKey(date)===dayKey(new Date());
     const endMinutes=currentDay?Math.max(1,minutesOfDay(new Date())):1440;
-    const scaleMinutes=currentDay?endMinutes:1440;
+    const scaleMinutes=1440;
     const dayEvents=eventsForDay(date).filter(event=>!currentDay||minutesOfDay(event.at)<=endMinutes);
-    const height=currentDay
-      ? Math.max(120,Math.round(TIMELINE_BASE_HEIGHT*(endMinutes/1440)*zoom))
-      : Math.round(TIMELINE_BASE_HEIGHT*zoom);
+    const height=Math.round(TIMELINE_BASE_HEIGHT*zoom);
     let collisionRun=0;
     let previousMinutes=-Infinity;
 
@@ -419,7 +417,7 @@
       return `<div class="timeline-gap" style="top:${top}px" aria-label="${escapeHtml(label)} entre ${escapeHtml(previous.title)} e ${escapeHtml(event.title)}"><span class="timeline-gap-value">${escapeHtml(label)}</span></div>`;
     }).join('');
 
-    const hourLabels=[0,6,12,18,24].filter(hour=>hour*60<=endMinutes).map(hour=>{
+    const hourLabels=[0,6,12,18,24].filter(hour=>hour*60<=scaleMinutes).map(hour=>{
       const top=((hour*60)/scaleMinutes)*height;
       const label=hour===24?'24:00':`${String(hour).padStart(2,'0')}:00`;
       return `<span class="timeline-hour" style="top:${top}px">${label}</span>`;
