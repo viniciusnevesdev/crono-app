@@ -1,4 +1,4 @@
 window.CRONO_RELEASE=Object.freeze({
-  version:'0.3.3',
-  name:'Edição de eventos'
+  version:'0.3.4',
+  name:'Atualização estável'
 });
