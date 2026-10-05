@@ -355,10 +355,15 @@
     toast(type==='sleep_start'?`Início do sono registrado às ${formatTime(now)}.`:`Acordei registrado às ${formatTime(now)}.`);
   }
 
-  function renderTimeline(target,date,{zoom=1,compact=false}={}){
+  function renderTimeline(target,date,{zoom=1,compact=false,throughNow=false}={}){
     if(!target)return;
-    const dayEvents=eventsForDay(date);
-    const height=Math.round(TIMELINE_BASE_HEIGHT*zoom);
+    const currentDay=throughNow&&dayKey(date)===dayKey(new Date());
+    const endMinutes=currentDay?Math.max(1,minutesOfDay(new Date())):1440;
+    const scaleMinutes=currentDay?endMinutes:1440;
+    const dayEvents=eventsForDay(date).filter(event=>!currentDay||minutesOfDay(event.at)<=endMinutes);
+    const height=currentDay
+      ? Math.max(120,Math.round(TIMELINE_BASE_HEIGHT*(endMinutes/1440)*zoom))
+      : Math.round(TIMELINE_BASE_HEIGHT*zoom);
     let collisionRun=0;
     let previousMinutes=-Infinity;
 
@@ -366,8 +371,8 @@
       const dayStart=startOfLocalDay(date);
       const fromMinutes=(interval.from-dayStart)/60000;
       const toMinutes=(interval.to-dayStart)/60000;
-      const top=(fromMinutes/1440)*height;
-      const bandHeight=Math.max(2,((toMinutes-fromMinutes)/1440)*height);
+      const top=(fromMinutes/scaleMinutes)*height;
+      const bandHeight=Math.max(2,((toMinutes-fromMinutes)/scaleMinutes)*height);
       const icons=Array.from({length:18},()=>`<span>${SLEEP_ICON}</span>`).join('');
       return `<div class="sleep-interval${interval.active?' active':''}" style="top:${top}px;height:${bandHeight}px" aria-label="Período de sono"><div class="sleep-pattern" aria-hidden="true">${icons}</div></div>`;
     }).join('');
@@ -377,7 +382,7 @@
       collisionRun=minute-previousMinutes<COLLISION_MINUTES?collisionRun+1:0;
       previousMinutes=minute;
       const side=collisionRun%2===0?'right':'left';
-      const top=(minute/1440)*height;
+      const top=(minute/scaleMinutes)*height;
       const kind=eventKind(event);
       const kindMarkup=kind?`<span class="timeline-event-kind" aria-hidden="true">${kind.icon}</span>`:'';
       const kindLabel=kind?`, ${kind.label}`:'';
@@ -391,8 +396,8 @@
       </button>`;
     }).join('');
 
-    const hourLabels=[0,6,12,18,24].map(hour=>{
-      const top=(hour/24)*height;
+    const hourLabels=[0,6,12,18,24].filter(hour=>hour*60<=endMinutes).map(hour=>{
+      const top=((hour*60)/scaleMinutes)*height;
       const label=hour===24?'24:00':`${String(hour).padStart(2,'0')}:00`;
       return `<span class="timeline-hour" style="top:${top}px">${label}</span>`;
     }).join('');
@@ -416,7 +421,7 @@
     const today=startOfLocalDay();
     const yesterday=new Date(today);
     yesterday.setDate(yesterday.getDate()-1);
-    renderTimeline(document.getElementById('todayTimeline'),today,{zoom:timelineZoom});
+    renderTimeline(document.getElementById('todayTimeline'),today,{zoom:timelineZoom,throughNow:true});
     renderTimeline(document.getElementById('yesterdayTimeline'),yesterday,{zoom:1,compact:true});
     document.querySelectorAll('[data-timeline-zoom]').forEach(button=>{
       button.classList.toggle('selected',Number(button.dataset.timelineZoom)===timelineZoom);
@@ -433,11 +438,10 @@
       : null;
     const dates=[];
     if(earliest&&earliest<today){
-      const cursor=new Date(today);
-      cursor.setDate(cursor.getDate()-1);
-      while(cursor>=earliest){
+      const cursor=new Date(earliest);
+      while(cursor<today){
         dates.push(new Date(cursor));
-        cursor.setDate(cursor.getDate()-1);
+        cursor.setDate(cursor.getDate()+1);
       }
     }
 
@@ -476,6 +480,15 @@
     renderHomeTimelines();
     renderHistory();
     renderSleepActions();
+  }
+
+  let chronologyPositioned=false;
+  function scrollToPresent(force=false){
+    if(chronologyPositioned&&!force)return;
+    requestAnimationFrame(()=>{
+      window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'});
+      chronologyPositioned=true;
+    });
   }
 
   function openEventDetails(id){
@@ -682,13 +695,15 @@
     });
     renderTabBar();
     if(name==='event'||name==='history')renderChronology();
-    window.scrollTo({top:0,behavior:'instant'});
+    if(name==='event'||name==='history')scrollToPresent(true);
+    else window.scrollTo({top:0,behavior:'instant'});
   }
 
   hydrate();
   applyPreferences();
   updateEventSummary();
   renderChronology();
+  scrollToPresent();
 
   document.getElementById('createEventButton')?.addEventListener('click',openEventSheet);
   document.getElementById('sleepStartButton')?.addEventListener('click',()=>addSleepEvent('sleep_start'));
