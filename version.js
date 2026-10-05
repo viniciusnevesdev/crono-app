@@ -1,4 +1,4 @@
 window.CRONO_RELEASE=Object.freeze({
-  version:'0.3.6',
-  name:'Todos os eventos editáveis'
+  version:'0.3.7',
+  name:'Indicadores de sono'
 });
