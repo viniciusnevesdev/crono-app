@@ -284,6 +284,12 @@
     })[char]);
   }
 
+  function eventKind(event){
+    if(event.type==='sleep_start')return {icon:'☾',label:'Início do sono'};
+    if(event.type==='sleep_end')return {icon:'☀︎',label:'Acordei'};
+    return null;
+  }
+
   function activeSleepStart(){
     let open=null;
     [...events].sort((a,b)=>new Date(a.at)-new Date(b.at)).forEach(event=>{
@@ -372,10 +378,14 @@
       previousMinutes=minute;
       const side=collisionRun%2===0?'right':'left';
       const top=(minute/1440)*height;
-      return `<button class="timeline-event side-${side}" type="button" data-event-id="${escapeHtml(event.id)}" style="top:${top}px" aria-label="${escapeHtml(event.title)}, ${formatTime(event.at)}">
+      const kind=eventKind(event);
+      const kindMarkup=kind?`<span class="timeline-event-kind" aria-hidden="true">${kind.icon}</span>`:'';
+      const kindLabel=kind?`, ${kind.label}`:'';
+      return `<button class="timeline-event side-${side}" type="button" data-event-id="${escapeHtml(event.id)}" style="top:${top}px" aria-label="${escapeHtml(event.title)}, ${formatTime(event.at)}${kindLabel}">
         <span class="timeline-event-dot" aria-hidden="true"></span>
         <span class="timeline-event-copy">
           <time>${formatTime(event.at)}</time>
+          ${kindMarkup}
           <strong>${escapeHtml(event.title)}</strong>
         </span>
       </button>`;
@@ -479,6 +489,13 @@
     const notes=document.getElementById('eventDetailsNotes');
     notes.textContent=event.notes||'Sem descrição adicional.';
     notes.classList.toggle('muted',!event.notes);
+    const kind=eventKind(event);
+    const kindWrap=document.getElementById('eventDetailsKind');
+    if(kindWrap){
+      kindWrap.hidden=!kind;
+      document.getElementById('eventDetailsKindIcon').textContent=kind?.icon||'';
+      document.getElementById('eventDetailsKindLabel').textContent=kind?.label||'';
+    }
     const actions=document.getElementById('eventDetailActions');
     if(actions)actions.hidden=false;
     sheet.hidden=false;
