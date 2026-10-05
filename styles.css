@@ -924,6 +924,9 @@ html[data-visual-style="ultra"] .backup-button{
 .event-details h3{margin:0 0 10px;font-size:22px;line-height:27px;letter-spacing:-.35px}
 .event-details p{margin:0;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--card);font-size:13px;line-height:18px;white-space:pre-wrap}
 .event-details p.muted{color:var(--secondary)}
+.event-detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.event-detail-actions button{min-height:42px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);font:inherit;font-size:14px;font-weight:720}
+.event-detail-actions .event-detail-delete{color:#ff3b30}
 html[data-theme="dark"] .day-timeline-card,html[data-theme="dark"] .history-day{box-shadow:none}
 html[data-visual-style="ultra"] .day-timeline-card{border-color:color-mix(in srgb,var(--accent) 25%,var(--line))}
 @media(max-width:360px){
