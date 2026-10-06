@@ -1049,10 +1049,6 @@
   document.getElementById('createEventButton')?.addEventListener('click',openEventSheet);
   document.getElementById('procrastinatedButton')?.addEventListener('click',()=>showProcrastinatedView(true));
   document.getElementById('procrastinatedBackButton')?.addEventListener('click',()=>showProcrastinatedView(false));
-  document.getElementById('addProcrastinatedButton')?.addEventListener('click',()=>{
-    const form=document.getElementById('procrastinatedForm');
-    if(form){form.hidden=false;document.getElementById('procrastinatedInput')?.focus()}
-  });
   document.getElementById('procrastinatedForm')?.addEventListener('submit',event=>{
     event.preventDefault();
     const input=document.getElementById('procrastinatedInput');
