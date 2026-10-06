@@ -11,7 +11,7 @@
   const PROCRASTINATED_KEY='crono-procrastinated-v1';
   const GOALS_KEY='crono-goals-v1';
   const CLOSE_ICON=`<svg viewBox="0 0 20.7578 20.3672" aria-hidden="true"><path d="M10.1719 20.3516C15.7891 20.3516 20.3516 15.7969 20.3516 10.1797C20.3516 4.5625 15.7891 0 10.1719 0C4.55469 0 0 4.5625 0 10.1797C0 15.7969 4.55469 20.3516 10.1719 20.3516ZM10.1719 18.8984C5.35156 18.8984 1.45312 15 1.45312 10.1797C1.45312 5.35938 5.35156 1.46094 10.1719 1.46094C14.9922 1.46094 18.8906 5.35938 18.8906 10.1797C18.8906 15 14.9922 18.8984 10.1719 18.8984Z" fill="currentColor" fill-opacity="0.85"/><path d="M7.1875 14.1562L14.1406 7.19531C14.2812 7.0625 14.3594 6.89062 14.3594 6.70312C14.3594 6.3125 14.0469 6.01562 13.6562 6.01562C13.4688 6.01562 13.3047 6.08594 13.1719 6.22656L6.19531 13.1797C6.05469 13.3203 5.98438 13.4766 5.98438 13.6797C5.98438 14.0625 6.28906 14.375 6.67969 14.375C6.88281 14.375 7.04688 14.2969 7.1875 14.1562ZM13.1562 14.1562C13.2891 14.2969 13.4531 14.375 13.6562 14.375C14.0469 14.375 14.3594 14.0625 14.3594 13.6797C14.3594 13.4766 14.2812 13.3203 14.1406 13.1797L7.17188 6.22656C7.03125 6.08594 6.875 6.01562 6.67969 6.01562C6.28906 6.01562 5.98438 6.3125 5.98438 6.70312C5.98438 6.89062 6.05469 7.0625 6.19531 7.19531Z" fill="currentColor" fill-opacity="0.85"/></svg>`;
-  const DEFAULTS={theme:'system',visualStyle:'optimized',collapsedSleepIntervals:{}};
+  const DEFAULTS={theme:'system',visualStyle:'optimized',timelineBackground:'styled',collapsedSleepIntervals:{}};
 
   const CURVES={
     ios:'cubic-bezier(.2,.8,.2,1)',
@@ -400,9 +400,11 @@
   function paintSettings(){
     const themeChoices=['light','system','dark'];
     const visualChoices=['optimized','ultra'];
+    const timelineBackgroundChoices=['plain','styled'];
 
     const themeSegment=document.querySelector('.theme-mode-segment');
     const visualPicker=document.querySelector('.visual-style-picker');
+    const timelineBackgroundPicker=document.querySelector('.timeline-background-picker');
 
     if(themeSegment){
       themeSegment.dataset.selectedIndex=String(Math.max(0,themeChoices.indexOf(settings.theme)));
@@ -410,6 +412,10 @@
 
     if(visualPicker){
       visualPicker.dataset.selectedIndex=String(Math.max(0,visualChoices.indexOf(settings.visualStyle)));
+    }
+
+    if(timelineBackgroundPicker){
+      timelineBackgroundPicker.dataset.selectedIndex=String(Math.max(0,timelineBackgroundChoices.indexOf(settings.timelineBackground)));
     }
 
     document.querySelectorAll('[data-theme-choice]').forEach(button=>{
@@ -423,11 +429,18 @@
       button.classList.toggle('selected',selected);
       button.setAttribute('aria-pressed',String(selected));
     });
+
+    document.querySelectorAll('[data-timeline-background]').forEach(button=>{
+      const selected=button.dataset.timelineBackground===settings.timelineBackground;
+      button.classList.toggle('selected',selected);
+      button.setAttribute('aria-pressed',String(selected));
+    });
   }
 
   function applyPreferences(){
     document.documentElement.dataset.theme=settings.theme;
     document.documentElement.dataset.visualStyle=settings.visualStyle;
+    document.documentElement.dataset.timelineBackground=settings.timelineBackground;
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content',isDark()?'#000000':'#F2F2F6');
     paintSettings();
     renderTabBar();
@@ -1270,6 +1283,14 @@
   document.querySelectorAll('[data-visual-style-mode]').forEach(button=>{
     button.addEventListener('click',()=>{
       settings.visualStyle=button.dataset.visualStyleMode==='ultra'?'ultra':'optimized';
+      saveSettings();
+      applyPreferences();
+    });
+  });
+
+  document.querySelectorAll('[data-timeline-background]').forEach(button=>{
+    button.addEventListener('click',()=>{
+      settings.timelineBackground=button.dataset.timelineBackground==='plain'?'plain':'styled';
       saveSettings();
       applyPreferences();
     });
