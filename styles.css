@@ -978,7 +978,8 @@ html[data-visual-style="ultra"] .day-timeline-card{border-color:color-mix(in srg
 .sleep-end-action{background:#efe7ff;color:#4e2b8c;border:1px solid rgba(111,75,184,.18)}
 .sleep-action-icon{font-size:20px;line-height:1}
 .sleep-interval{position:absolute;z-index:0;left:-12px;right:-12px;overflow:hidden;background:rgba(111,75,184,.20);border-top:1px solid rgba(111,75,184,.25);border-bottom:1px solid rgba(111,75,184,.25)}
-.sleep-interval-toggle{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid rgba(111,75,184,.28);border-radius:999px;background:color-mix(in srgb,var(--card) 88%,#fff);color:#56338d;padding:6px 10px;font:inherit;font-size:10px;font-weight:760;line-height:13px;box-shadow:0 2px 8px rgba(54,31,96,.10)}
+.sleep-interval-toggle{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:34px;height:34px;border:1px solid rgba(111,75,184,.28);border-radius:50%;background:color-mix(in srgb,var(--card) 88%,#fff);color:#56338d;padding:0;box-shadow:0 2px 8px rgba(54,31,96,.10)}
+.sleep-interval-toggle svg{display:block;width:19px;height:19px}
 .sleep-interval.collapsed{display:grid;place-items:center;padding:10px 16px;background:rgba(111,75,184,.24)}
 .sleep-collapsed-copy{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:9px;max-width:100%;padding:4px 8px;border-radius:14px;background:color-mix(in srgb,var(--card) 86%,transparent);color:#56338d;font-size:11px;line-height:14px;white-space:nowrap}
 .sleep-collapsed-copy .sleep-interval-toggle{position:static;transform:none;flex:0 0 auto}
