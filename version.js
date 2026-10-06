@@ -1,4 +1,4 @@
 window.CRONO_RELEASE=Object.freeze({
-  version:'0.3.13',
-  name:'Atualização manual'
+  version:'0.3.14',
+  name:'Ícones de sono'
 });
