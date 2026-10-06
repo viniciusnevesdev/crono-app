@@ -1176,7 +1176,18 @@
     document.addEventListener(type,event=>event.preventDefault(),{passive:false});
   });
 
-  document.getElementById('createEventButton')?.addEventListener('click',openEventSheet);
+  let eventComposerOpenedAt=0;
+  function openEventComposerFromAction(event){
+    if(event?.type==='pointerup')event.preventDefault();
+    const now=Date.now();
+    if(now-eventComposerOpenedAt<450)return;
+    eventComposerOpenedAt=now;
+    openEventSheet();
+  }
+
+  const createEventButton=document.getElementById('createEventButton');
+  createEventButton?.addEventListener('pointerup',openEventComposerFromAction);
+  createEventButton?.addEventListener('click',openEventComposerFromAction);
   document.getElementById('procrastinatedButton')?.addEventListener('click',()=>showProcrastinatedView(true));
   document.getElementById('procrastinatedBackButton')?.addEventListener('click',()=>showProcrastinatedView(false));
   document.getElementById('goalCardForm')?.addEventListener('submit',event=>{
