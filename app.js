@@ -1078,7 +1078,7 @@
     const input=document.getElementById('goalCardInput');
     const value=input?.value.trim()||'';
     if(!value)return;
-    goals.push(value);
+    goals.unshift(value);
     saveGoals();
     if(input)input.value='';
     const form=document.getElementById('goalCardForm');
