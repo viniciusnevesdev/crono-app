@@ -704,6 +704,15 @@ html[data-visual-style="ultra"] .chrono-card{
   margin-top:4px;
 }
 
+.update-section{margin-top:4px}
+.update-actions{width:calc(100% - 36px);margin:0 auto}
+.update-button{appearance:none;width:100%;min-height:42px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--accent);padding:8px 14px;font:inherit;font-size:13px;font-weight:740;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s ease,opacity .18s ease}
+.update-button:active{transform:scale(.985)}
+.update-button:disabled{opacity:.58}
+.update-icon{font-size:21px;line-height:1}
+.update-button.is-checking .update-icon{animation:crono-update-spin .75s linear infinite}
+@keyframes crono-update-spin{to{transform:rotate(360deg)}}
+
 .backup-actions{
   width:calc(100% - 36px);
   margin:0 auto;
@@ -753,6 +762,7 @@ html[data-visual-style="ultra"] .backup-button{
   border-color:color-mix(in srgb,var(--accent) 28%,var(--line));
   box-shadow:0 0 18px color-mix(in srgb,var(--accent) 12%,transparent);
 }
+html[data-visual-style="ultra"] .update-button{border-color:color-mix(in srgb,var(--accent) 28%,var(--line));box-shadow:0 0 18px color-mix(in srgb,var(--accent) 12%,transparent)}
 
 .event-sheet-wrap[hidden]{display:none}
 
