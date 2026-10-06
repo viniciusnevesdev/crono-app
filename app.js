@@ -457,8 +457,7 @@
       return `<div class="sleep-interval${interval.active?' active':''}${interval.isCollapsed?' collapsed':''}" style="top:${interval.top}px;height:${Math.max(2,interval.bandHeight)}px" aria-label="Período de sono de ${duration}">${compact}</div>`;
     }).join('');
 
-    const hiddenSleepEndpointIds=new Set(sleepLayout.bands.filter(interval=>interval.isCollapsed).flatMap(interval=>[interval.startEventId,interval.endEventId].filter(Boolean)));
-    const visibleDayEvents=dayEvents.filter(event=>!hiddenSleepEndpointIds.has(event.id));
+    const visibleDayEvents=dayEvents;
 
     const eventMarkup=visibleDayEvents.map(event=>{
       const minute=minutesOfDay(event.at);
