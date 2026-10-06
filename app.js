@@ -452,7 +452,8 @@
     const sleepMarkup=sleepLayout.bands.map(interval=>{
       const duration=formatElapsedDuration(interval.to-interval.from);
       const toggle=interval.canCollapse?`<button class="sleep-interval-toggle" type="button" data-sleep-toggle="${escapeHtml(interval.key)}" aria-label="${interval.isCollapsed?'Expandir':'Encolher'} período de sono">${interval.isCollapsed?EXPAND_ICON:COLLAPSE_ICON}</button>`:'';
-      const compact=interval.isCollapsed?`<div class="sleep-collapsed-copy"><strong>Dormi ${duration}</strong>${toggle}</div>`:toggle;
+      const sleepCard=interval.canCollapse?`<div class="sleep-collapsed-copy"><strong>Dormi ${duration}</strong>${toggle}</div>`:'';
+      const compact=sleepCard;
       return `<div class="sleep-interval${interval.active?' active':''}${interval.isCollapsed?' collapsed':''}" style="top:${interval.top}px;height:${Math.max(2,interval.bandHeight)}px" aria-label="Período de sono de ${duration}">${compact}</div>`;
     }).join('');
 
@@ -484,6 +485,7 @@
       const currentAt=new Date(event.at);
       const elapsed=currentAt-previousAt;
       if(!(elapsed>0))return '';
+      if(previous.type==='sleep_start'&&event.type==='sleep_end')return '';
       const previousMinute=minutesOfDay(previous.at);
       const currentMinute=minutesOfDay(event.at);
       const hasCollapsedSleepBetween=sleepLayout.bands.some(interval=>interval.isCollapsed&&previousMinute<=interval.fromMinutes&&currentMinute>=interval.toMinutes);
