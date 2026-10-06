@@ -109,7 +109,30 @@
         </div>
       </section>
       <section class="view" data-view="analysis" aria-label="Análises"></section>
-      <section class="view" data-view="goals" aria-label="Metas"></section>
+      <section class="view goals-view" data-view="goals" aria-label="Metas">
+        <div class="goals-page" id="goalsHome">
+          <header class="goals-header">
+            <p class="day-eyebrow">Metas</p>
+            <h1>O que você quer realizar?</h1>
+          </header>
+          <button class="goals-category-button" id="procrastinatedButton" type="button">
+            <span>Procrastinadas</span>
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+        <div class="goals-page procrastinated-page" id="procrastinatedView" hidden>
+          <header class="goals-subheader">
+            <button class="goals-back-button" id="procrastinatedBackButton" type="button" aria-label="Voltar para Metas">‹</button>
+            <h1>Procrastinadas</h1>
+          </header>
+          <button class="goals-add-button" id="addProcrastinatedButton" type="button">+ Adicionar item</button>
+          <form class="goals-add-form" id="procrastinatedForm" hidden>
+            <input id="procrastinatedInput" type="text" maxlength="160" placeholder="O que você está adiando?" autocomplete="off">
+            <button type="submit">Adicionar</button>
+          </form>
+          <ul class="goals-item-list" id="procrastinatedList"></ul>
+        </div>
+      </section>
 
       <section class="view settings-view" data-view="settings" aria-label="Ajustes">
         <div class="settings-content">
@@ -302,8 +325,8 @@
     </nav>
   </div>
 
-  <script src="./version.js?v=0.3.25"></script>
+  <script src="./version.js?v=0.3.26"></script>
   <script src="./navicons.js?v=20261006-01"></script>
-  <script src="./app.js?v=20261006-11"></script>
+  <script src="./app.js?v=20261006-12"></script>
 </body>
 </html>
