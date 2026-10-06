@@ -26,7 +26,7 @@
     bubbleWidth:.99,bubbleHeight:.99,bubbleOpacity:.5,bubbleColor:'#adadad',
     bubbleRadius:80,bubbleBorderWidth:1.25,bubbleBorderOpacity:.15,bubbleBorderColor:'#ffffff',
     bubbleShadowOpacity:.14,bubbleShadowBlur:10,bubbleShadowY:-1,
-    iconSize:31,activeScale:1.32,iconY:-1,
+    iconSize:31,iconY:-1,
     textSize:8,textWeight:650,itemGap:1,
     activeColor:'#ffffff',inactiveColor:'#ffffff',
     inactiveOpacity:.48,animationDuration:740,easing:'spring',pressScale:1
@@ -385,7 +385,7 @@
       if(icon){
         icon.style.width=`${c.iconSize}px`;
         icon.style.height=`${c.iconSize}px`;
-        icon.style.transform=`translateY(${c.iconY}px) scale(${active?c.activeScale:1})`;
+        icon.style.transform=`translateY(${c.iconY}px)`;
         icon.style.transition=`transform ${dur}ms ${curve}`;
       }
 
