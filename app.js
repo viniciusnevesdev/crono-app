@@ -134,7 +134,12 @@
 
   function showGoalEditWarning(show){
     const warning=document.getElementById('goalEditWarning');
+    const form=document.getElementById('goalEditForm');
     if(warning)warning.hidden=!show;
+    if(show){
+      if(form)form.hidden=true;
+      document.getElementById('goalDetailsTitle').textContent='Salvar alterações?';
+    }
   }
 
   function closeGoalDetails(){
@@ -145,6 +150,7 @@
   function beginGoalEdit(){
     if(selectedGoalIndex===null)return;
     goalIsEditing=true;
+    document.getElementById('goalDetailsTitle').textContent='Editar meta';
     document.getElementById('goalEditInput').value=goals[selectedGoalIndex]||'';
     document.getElementById('goalDetailView').hidden=true;
     document.getElementById('goalEditForm').hidden=false;
@@ -1169,6 +1175,7 @@
   document.querySelector('[data-cancel-goal-edit]')?.addEventListener('click',()=>{
     goalIsEditing=false;
     showGoalEditWarning(false);
+    document.getElementById('goalDetailsTitle').textContent='Meta';
     document.getElementById('goalEditForm').hidden=true;
     document.getElementById('goalDetailView').hidden=false;
   });
