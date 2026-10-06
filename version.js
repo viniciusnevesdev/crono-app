@@ -1,4 +1,4 @@
 window.CRONO_RELEASE=Object.freeze({
-  version:'0.3.16',
-  name:'Faixa de sono alinhada'
+  version:'0.3.17',
+  name:'Cartão de sono à direita'
 });
