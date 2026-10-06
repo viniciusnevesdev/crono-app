@@ -940,8 +940,9 @@ html[data-visual-style="ultra"] .update-button{border-color:color-mix(in srgb,va
 .history-day-timeline[hidden]{display:none}
 .goals-view{padding:calc(26px + env(safe-area-inset-top)) 18px 34px}
 .goals-page{max-width:480px;margin:0 auto}
-.goals-header{margin:0 2px 14px}
-.goals-header h1,.goals-subheader h1{margin:0;font-size:30px;line-height:34px;letter-spacing:-.6px;font-weight:780}
+.goals-header{margin:0 2px 14px;text-align:center}
+.goals-header h1{margin:0;font-size:22px;line-height:28px;letter-spacing:-.25px;font-weight:780}
+.goals-subheader h1{margin:0;font-size:30px;line-height:34px;letter-spacing:-.6px;font-weight:780}
 .goals-category-button{width:100%;min-height:72px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);padding:12px 14px 12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;font:inherit;text-align:left;box-shadow:0 8px 24px rgba(0,0,0,.055)}
 .goals-category-copy{display:grid;gap:3px}
 .goals-category-copy strong{font-size:15px;line-height:19px;font-weight:760}
