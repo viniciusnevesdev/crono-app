@@ -9,6 +9,7 @@
   const STORAGE_KEY='crono-settings-v1';
   const EVENTS_KEY='crono-events-v1';
   const PROCRASTINATED_KEY='crono-procrastinated-v1';
+  const GOALS_KEY='crono-goals-v1';
   const CLOSE_ICON=`<svg viewBox="0 0 20.7578 20.3672" aria-hidden="true"><path d="M10.1719 20.3516C15.7891 20.3516 20.3516 15.7969 20.3516 10.1797C20.3516 4.5625 15.7891 0 10.1719 0C4.55469 0 0 4.5625 0 10.1797C0 15.7969 4.55469 20.3516 10.1719 20.3516ZM10.1719 18.8984C5.35156 18.8984 1.45312 15 1.45312 10.1797C1.45312 5.35938 5.35156 1.46094 10.1719 1.46094C14.9922 1.46094 18.8906 5.35938 18.8906 10.1797C18.8906 15 14.9922 18.8984 10.1719 18.8984Z" fill="currentColor" fill-opacity="0.85"/><path d="M7.1875 14.1562L14.1406 7.19531C14.2812 7.0625 14.3594 6.89062 14.3594 6.70312C14.3594 6.3125 14.0469 6.01562 13.6562 6.01562C13.4688 6.01562 13.3047 6.08594 13.1719 6.22656L6.19531 13.1797C6.05469 13.3203 5.98438 13.4766 5.98438 13.6797C5.98438 14.0625 6.28906 14.375 6.67969 14.375C6.88281 14.375 7.04688 14.2969 7.1875 14.1562ZM13.1562 14.1562C13.2891 14.2969 13.4531 14.375 13.6562 14.375C14.0469 14.375 14.3594 14.0625 14.3594 13.6797C14.3594 13.4766 14.2812 13.3203 14.1406 13.1797L7.17188 6.22656C7.03125 6.08594 6.875 6.01562 6.67969 6.01562C6.28906 6.01562 5.98438 6.3125 5.98438 6.70312C5.98438 6.89062 6.05469 7.0625 6.19531 7.19531Z" fill="currentColor" fill-opacity="0.85"/></svg>`;
   const DEFAULTS={theme:'system',visualStyle:'optimized',collapsedSleepIntervals:{}};
 
@@ -59,6 +60,7 @@
   }
 
   let events=loadEvents();
+  let goals=loadGoals();
   let procrastinatedItems=loadProcrastinatedItems();
   let timelineZoom=1;
   let yesterdayTimelineZoom=1;
@@ -84,6 +86,27 @@
 
   function saveProcrastinatedItems(){
     localStorage.setItem(PROCRASTINATED_KEY,JSON.stringify(procrastinatedItems));
+  }
+
+  function loadGoals(){
+    try{
+      const parsed=JSON.parse(localStorage.getItem(GOALS_KEY)||'[]');
+      return Array.isArray(parsed)?parsed.filter(item=>typeof item==='string'):[ ];
+    }catch{return []}
+  }
+
+  function saveGoals(){
+    localStorage.setItem(GOALS_KEY,JSON.stringify(goals));
+  }
+
+  function renderGoalCards(){
+    const grid=document.getElementById('goalsGrid');
+    if(!grid)return;
+    grid.innerHTML=`<button class="goal-add-card" id="addGoalCardButton" type="button"><span class="goal-add-mark" aria-hidden="true">+</span><strong>Adicionar</strong></button>${goals.map(item=>`<article class="goal-card"><span>${escapeHtml(item)}</span></article>`).join('')}`;
+    grid.querySelector('#addGoalCardButton')?.addEventListener('click',()=>{
+      const form=document.getElementById('goalCardForm');
+      if(form){form.hidden=false;document.getElementById('goalCardInput')?.focus()}
+    });
   }
 
   function renderProcrastinatedItems(){
@@ -1038,6 +1061,7 @@
 
   hydrate();
   applyPreferences();
+  renderGoalCards();
   updateEventSummary();
   renderChronology();
   scrollToPresent();
@@ -1049,6 +1073,18 @@
   document.getElementById('createEventButton')?.addEventListener('click',openEventSheet);
   document.getElementById('procrastinatedButton')?.addEventListener('click',()=>showProcrastinatedView(true));
   document.getElementById('procrastinatedBackButton')?.addEventListener('click',()=>showProcrastinatedView(false));
+  document.getElementById('goalCardForm')?.addEventListener('submit',event=>{
+    event.preventDefault();
+    const input=document.getElementById('goalCardInput');
+    const value=input?.value.trim()||'';
+    if(!value)return;
+    goals.push(value);
+    saveGoals();
+    if(input)input.value='';
+    const form=document.getElementById('goalCardForm');
+    if(form)form.hidden=true;
+    renderGoalCards();
+  });
   document.getElementById('procrastinatedForm')?.addEventListener('submit',event=>{
     event.preventDefault();
     const input=document.getElementById('procrastinatedInput');
