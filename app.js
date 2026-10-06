@@ -8,6 +8,7 @@
 
   const STORAGE_KEY='crono-settings-v1';
   const EVENTS_KEY='crono-events-v1';
+  const PROCRASTINATED_KEY='crono-procrastinated-v1';
   const DEFAULTS={theme:'system',visualStyle:'optimized',collapsedSleepIntervals:{}};
 
   const CURVES={
@@ -57,6 +58,7 @@
   }
 
   let events=loadEvents();
+  let procrastinatedItems=loadProcrastinatedItems();
   let timelineZoom=1;
   let selectedEventId=null;
   let editingEventId=null;
@@ -69,6 +71,39 @@
 
   function saveSettings(){
     localStorage.setItem(STORAGE_KEY,JSON.stringify(settings));
+  }
+
+  function loadProcrastinatedItems(){
+    try{
+      const parsed=JSON.parse(localStorage.getItem(PROCRASTINATED_KEY)||'[]');
+      return Array.isArray(parsed)?parsed.filter(item=>typeof item==='string'):[ ];
+    }catch{return []}
+  }
+
+  function saveProcrastinatedItems(){
+    localStorage.setItem(PROCRASTINATED_KEY,JSON.stringify(procrastinatedItems));
+  }
+
+  function renderProcrastinatedItems(){
+    const list=document.getElementById('procrastinatedList');
+    if(!list)return;
+    list.innerHTML=procrastinatedItems.length
+      ? procrastinatedItems.map((item,index)=>`<li class="goals-item"><span>${escapeHtml(item)}</span><button type="button" data-remove-procrastinated="${index}" aria-label="Remover item">×</button></li>`).join('')
+      : '<li class="goals-empty">Nenhum item adicionado ainda.</li>';
+    list.querySelectorAll('[data-remove-procrastinated]').forEach(button=>button.addEventListener('click',()=>{
+      procrastinatedItems.splice(Number(button.dataset.removeProcrastinated),1);
+      saveProcrastinatedItems();
+      renderProcrastinatedItems();
+    }));
+  }
+
+  function showProcrastinatedView(show){
+    const home=document.getElementById('goalsHome');
+    const view=document.getElementById('procrastinatedView');
+    if(!home||!view)return;
+    home.hidden=show;
+    view.hidden=!show;
+    if(show){renderProcrastinatedItems();document.getElementById('procrastinatedInput')?.focus()}
   }
 
   function clearPendingTimelineTap(){
@@ -901,6 +936,23 @@
   scrollToPresent();
 
   document.getElementById('createEventButton')?.addEventListener('click',openEventSheet);
+  document.getElementById('procrastinatedButton')?.addEventListener('click',()=>showProcrastinatedView(true));
+  document.getElementById('procrastinatedBackButton')?.addEventListener('click',()=>showProcrastinatedView(false));
+  document.getElementById('addProcrastinatedButton')?.addEventListener('click',()=>{
+    const form=document.getElementById('procrastinatedForm');
+    if(form){form.hidden=false;document.getElementById('procrastinatedInput')?.focus()}
+  });
+  document.getElementById('procrastinatedForm')?.addEventListener('submit',event=>{
+    event.preventDefault();
+    const input=document.getElementById('procrastinatedInput');
+    const value=input?.value.trim()||'';
+    if(!value)return;
+    procrastinatedItems.push(value);
+    saveProcrastinatedItems();
+    if(input)input.value='';
+    renderProcrastinatedItems();
+    input?.focus();
+  });
   document.getElementById('sleepStartButton')?.addEventListener('click',()=>addSleepEvent('sleep_start'));
   document.getElementById('sleepEndButton')?.addEventListener('click',()=>addSleepEvent('sleep_end'));
   document.querySelectorAll('[data-timeline-zoom]').forEach(button=>{
