@@ -442,6 +442,7 @@
   function buildTimelineLayout(date,height,intervals){
     const dayStart=startOfLocalDay(date);
     const collapsed=settings.collapsedSleepIntervals||{};
+    let removed=0;
     const bands=intervals.map(interval=>{
       const fromMinutes=(interval.from-dayStart)/60000;
       const toMinutes=(interval.to-dayStart)/60000;
@@ -450,25 +451,22 @@
       const canCollapse=!interval.active&&!intervalHasOtherEvents(interval)&&naturalHeight>COLLAPSED_SLEEP_HEIGHT+12;
       const isCollapsed=canCollapse&&Boolean(collapsed[key]);
       const bandHeight=isCollapsed?COLLAPSED_SLEEP_HEIGHT:naturalHeight;
-      return {...interval,fromMinutes,toMinutes,key,canCollapse,isCollapsed,bandHeight};
+      const top=(fromMinutes/1440)*height-removed;
+      if(isCollapsed)removed+=naturalHeight-bandHeight;
+      return {...interval,fromMinutes,toMinutes,key,canCollapse,isCollapsed,top,bandHeight};
     });
-    const collapsedMinutes=bands.filter(band=>band.isCollapsed).reduce((sum,band)=>sum+(band.toMinutes-band.fromMinutes),0);
-    const collapsedPixels=bands.filter(band=>band.isCollapsed).reduce((sum,band)=>sum+band.bandHeight,0);
-    const normalScale=(height-collapsedPixels)/Math.max(1,1440-collapsedMinutes);
     const yForMinutes=minutes=>{
-      let cursor=0;
-      let y=0;
+      let shift=0;
       for(const band of bands){
         if(!band.isCollapsed)continue;
-        if(minutes<=band.fromMinutes)return y+(minutes-cursor)*normalScale;
-        y+=(band.fromMinutes-cursor)*normalScale;
-        if(minutes<=band.toMinutes)return y+((minutes-band.fromMinutes)/(band.toMinutes-band.fromMinutes))*band.bandHeight;
-        y+=band.bandHeight;
-        cursor=band.toMinutes;
+        if(minutes>=band.toMinutes){
+          shift+=((band.toMinutes-band.fromMinutes)/1440)*height-band.bandHeight;
+        }else if(minutes>band.fromMinutes){
+          return band.top+((minutes-band.fromMinutes)/(band.toMinutes-band.fromMinutes))*band.bandHeight;
+        }
       }
-      return y+(minutes-cursor)*normalScale;
+      return (minutes/1440)*height-shift;
     };
-    bands.forEach(band=>{band.top=yForMinutes(band.fromMinutes)});
     const minutesForY=y=>{
       let low=0,high=1440;
       for(let i=0;i<28;i++){
@@ -478,7 +476,7 @@
       }
       return (low+high)/2;
     };
-    return {bands,yForMinutes,minutesForY,height};
+    return {bands,yForMinutes,minutesForY,height:height-removed};
   }
 
   function renderTimeline(target,date,{zoom=1,compact=false,throughNow=false}={}){
