@@ -982,6 +982,7 @@ html[data-visual-style="ultra"] .day-timeline-card{border-color:color-mix(in srg
 .sleep-interval-toggle svg{display:block;width:19px;height:19px}
 .sleep-interval.collapsed{display:grid;align-items:center;justify-items:end;padding:10px 16px;background:rgba(111,75,184,.28)}
 .sleep-collapsed-copy{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:9px;max-width:100%;padding:4px 8px;border-radius:14px;background:color-mix(in srgb,var(--card) 86%,transparent);color:#56338d;font-size:11px;line-height:14px;white-space:nowrap}
+.sleep-interval:not(.collapsed) .sleep-collapsed-copy{position:absolute;right:16px;top:50%;transform:translateY(-50%)}
 .sleep-collapsed-copy .sleep-interval-toggle{position:static;transform:none;flex:0 0 auto}
 .sleep-interval.active{background:rgba(111,75,184,.18)}
 html[data-theme="dark"] .sleep-interval{background:rgba(143,103,220,.28)}
