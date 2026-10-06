@@ -281,6 +281,18 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
   box-shadow:none;
 }
 
+/* Plano de fundo decorativo: novos enfeites da timeline devem obedecer a este estado. */
+.timeline-background-card.compact{padding:2px}
+.timeline-background-picker{--selection-gap:4px;position:relative;isolation:isolate;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--selection-gap)}
+.timeline-background-picker::before{content:"";position:absolute;z-index:0;top:0;bottom:0;left:0;width:calc((100% - 4px)/2);border:1px solid color-mix(in srgb,var(--accent) 34%,var(--line));border-radius:999px;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 15%,var(--card)),color-mix(in srgb,var(--accent) 9%,var(--card)));box-shadow:0 2px 7px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.56),0 0 12px color-mix(in srgb,var(--accent) 12%,transparent);transition:transform .34s cubic-bezier(.2,.82,.2,1);pointer-events:none}
+.timeline-background-picker[data-selected-index="1"]::before{transform:translateX(calc(100% + 4px))}
+.timeline-background-option{position:relative;z-index:1;min-width:0;min-height:32px;border:0;border-radius:999px;background:transparent;color:var(--secondary);display:flex;align-items:center;justify-content:center;gap:7px;padding:2px 9px;transition:color .18s ease,transform .15s ease}
+.timeline-background-option:active{transform:scale(.98)}
+.timeline-background-option strong{font-size:13px;line-height:16px;font-weight:720}
+.timeline-background-option svg{width:19px;height:19px;flex:0 0 auto;overflow:visible}
+.timeline-background-option.selected{color:var(--accent)}
+html[data-timeline-background="plain"] .timeline-canvas{background:transparent}
+
 /* Ultra: a preferência já é global e afetará componentes futuros também. */
 html[data-visual-style="ultra"] body{
   background:
@@ -915,7 +927,7 @@ html[data-visual-style="ultra"] .update-button{border-color:color-mix(in srgb,va
 .timeline-zoom button.selected{background:var(--accent);color:#fff}
 .day-timeline-card{position:relative;width:100%;overflow:hidden;border:1px solid var(--line);border-radius:28px;background:var(--card);box-shadow:0 8px 24px rgba(0,0,0,.055)}
 .day-timeline-card.compact{border-radius:24px}
-.timeline-canvas{position:relative;min-height:0;margin:22px 12px 24px;touch-action:pan-y}
+.timeline-canvas{position:relative;min-height:0;margin:22px 12px 24px;overflow:hidden;border-radius:18px;background:var(--timeline-sky,var(--card));touch-action:pan-y}
 .timeline-axis{position:absolute;z-index:1;top:0;bottom:0;left:41%;width:3px;border-radius:999px;transform:translateX(-50%);background:color-mix(in srgb,var(--secondary) 50%,transparent)}
 .timeline-hour{position:absolute;z-index:2;left:calc(41% - 9px);transform:translate(-100%,-50%);padding:1px 4px;border-radius:6px;background:var(--card);color:var(--secondary);font-size:9px;line-height:12px;font-weight:650;font-variant-numeric:tabular-nums}
 .timeline-gap{position:absolute;z-index:2;left:41%;transform:translate(-50%,-50%);pointer-events:none}
