@@ -363,12 +363,6 @@ html[data-visual-style="ultra"] .settings-card{
   line-height:1;
 }
 
-.rm-spark-custom,
-.rm-spark-custom *{
-  stroke:none!important;
-  stroke-width:0!important;
-}
-
 html[data-visual-style="ultra"] .tab-bar{
   box-shadow:
     0 8px 16px 2px rgba(0,0,0,.19),
