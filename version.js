@@ -1,4 +1,4 @@
 window.CRONO_RELEASE=Object.freeze({
-  version:'0.3.40',
-  name:'Janela de criação de metas'
+  version:'0.3.41',
+  name:'Detalhes e edição de metas'
 });
