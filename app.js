@@ -120,7 +120,35 @@
     return Math.round(Math.max(.5,Math.min(4,value))*4)/4;
   }
 
-  function enableTimelinePinch(canvas,zoom,onZoomChange){
+  function previewTimelineZoom(canvas,factor){
+    if(!canvas)return;
+    const normalized=Math.max(.5,Math.min(4,factor));
+    if(!canvas.dataset.pinchBaseHeight){
+      canvas.dataset.pinchBaseHeight=String(parseFloat(canvas.style.height)||canvas.clientHeight);
+      canvas.querySelectorAll('.timeline-event,.timeline-gap,.timeline-hour,.sleep-interval,.timeline-pending-dot').forEach(element=>{
+        if(element.style.top)element.dataset.pinchBaseTop=element.style.top;
+        if(element.classList.contains('sleep-interval')&&element.style.height)element.dataset.pinchBaseHeight=element.style.height;
+      });
+    }
+    const baseHeight=Number(canvas.dataset.pinchBaseHeight)||canvas.clientHeight;
+    if(Math.abs(normalized-1)<.001){
+      canvas.style.height=`${baseHeight}px`;
+      canvas.querySelectorAll('[data-pinch-base-top]').forEach(element=>{element.style.top=element.dataset.pinchBaseTop});
+      canvas.querySelectorAll('.sleep-interval[data-pinch-base-height]').forEach(element=>{element.style.height=element.dataset.pinchBaseHeight});
+      return;
+    }
+    canvas.style.height=`${baseHeight*normalized}px`;
+    canvas.querySelectorAll('[data-pinch-base-top]').forEach(element=>{
+      const top=parseFloat(element.dataset.pinchBaseTop);
+      if(Number.isFinite(top))element.style.top=`${top*normalized}px`;
+    });
+    canvas.querySelectorAll('.sleep-interval[data-pinch-base-height]').forEach(element=>{
+      const height=parseFloat(element.dataset.pinchBaseHeight);
+      if(Number.isFinite(height))element.style.height=`${height*normalized}px`;
+    });
+  }
+
+  function enableTimelinePinch(canvas,zoom,onZoomChange,onPreview){
     if(!canvas||!onZoomChange)return;
     const pointers=new Map();
     let initialDistance=0;
@@ -136,6 +164,7 @@
       if(!pinching)return;
       pinching=false;
       ignoreClickUntil=Date.now()+500;
+      onPreview?.(1);
       if(initialDistance&&Math.abs(lastDistance-initialDistance)>10){
         const nextZoom=normalizeTimelineZoom(initialZoom*(lastDistance/initialDistance));
         if(Math.abs(nextZoom-initialZoom)>=.12)onZoomChange(nextZoom);
@@ -156,6 +185,7 @@
       pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
       if(pinching&&pointers.size>=2){
         lastDistance=distance();
+        if(initialDistance)onPreview?.(lastDistance/initialDistance);
         event.preventDefault();
       }
     },{passive:false});
@@ -627,7 +657,7 @@
     });
     const canvas=target.querySelector('.timeline-canvas');
     if(canvas){
-      const shouldIgnoreTimelineClick=enableTimelinePinch(canvas,zoom,onZoomChange);
+      const shouldIgnoreTimelineClick=enableTimelinePinch(canvas,zoom,onZoomChange,factor=>previewTimelineZoom(canvas,factor));
       canvas.addEventListener('click',event=>{
         if(shouldIgnoreTimelineClick?.())return;
         if(event.target.closest('button,.sleep-interval-toggle,.timeline-pending-dot'))return;
