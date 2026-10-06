@@ -1,4 +1,4 @@
 window.CRONO_RELEASE=Object.freeze({
-  version:'0.3.42',
-  name:'Janela de detalhes corrigida'
+  version:'0.3.43',
+  name:'Edição de metas simplificada'
 });
