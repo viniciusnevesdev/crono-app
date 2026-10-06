@@ -209,6 +209,15 @@
 
         <div class="event-form">
           <label>
+            <span>Tipo</span>
+            <select id="eventTypeInput">
+              <option value="event">Geral</option>
+              <option value="sleep_start">Dormi</option>
+              <option value="sleep_end">Acordei</option>
+            </select>
+          </label>
+
+          <label>
             <span>Evento</span>
             <input id="eventTitleInput" type="text" maxlength="120" placeholder="O que aconteceu?" autocomplete="off">
           </label>
