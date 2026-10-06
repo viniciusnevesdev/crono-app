@@ -1,4 +1,4 @@
 window.CRONO_RELEASE=Object.freeze({
-  version:'0.3.25',
-  name:'Espaçamento e ícone de despertar'
+  version:'0.3.26',
+  name:'Lista de metas procrastinadas'
 });
