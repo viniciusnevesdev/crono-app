@@ -1,4 +1,4 @@
 window.CRONO_RELEASE=Object.freeze({
-  version:'0.3.38',
-  name:'Grid de metas'
+  version:'0.3.39',
+  name:'Ordenação das metas'
 });
