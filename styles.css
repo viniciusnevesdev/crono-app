@@ -952,9 +952,9 @@ html[data-visual-style="ultra"] .update-button{border-color:color-mix(in srgb,va
 .goals-subheader h1{width:100%}
 .goals-back-button{width:38px;height:38px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font-size:29px;line-height:1;font-weight:300;box-shadow:0 3px 10px rgba(0,0,0,.04)}
 .goals-subheader .goals-back-button{position:absolute;left:0;top:0}
-.goals-add-form{display:flex;gap:8px;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+.goals-add-form{display:flex;gap:8px;margin-top:10px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
 .goals-add-form input{min-width:0;flex:1;border:0;border-radius:10px;background:transparent;color:var(--text);padding:8px 4px;font:inherit;font-size:14px;outline:0}
-.goals-add-form button{border:0;border-radius:10px;background:var(--accent);color:#fff;padding:0 14px;font:inherit;font-size:13px;font-weight:740}
+.goals-add-form button{border:0;border-radius:999px;background:var(--accent);color:#fff;padding:0 14px;font:inherit;font-size:13px;font-weight:740}
 .goals-item-list{display:grid;gap:10px;margin:12px 0 0;padding:0;list-style:none}
 .goals-item{display:flex;align-items:center;gap:10px;min-height:56px;border:1px solid var(--line);border-radius:18px;background:var(--card);padding:10px 10px 10px 14px;color:var(--text);font-size:14px;box-shadow:0 4px 14px rgba(0,0,0,.035)}
 .goals-item span{min-width:0;flex:1;overflow-wrap:anywhere;line-height:19px}
