@@ -824,6 +824,25 @@
     }
   }
 
+  async function checkForUpdate(){
+    const button=document.getElementById('checkUpdateButton');
+    if(button){button.disabled=true;button.classList.add('is-checking');}
+    try{
+      const response=await fetch(`./latest.json?check=${Date.now()}`,{cache:'no-store'});
+      if(!response.ok)throw new Error('Não foi possível consultar a versão.');
+      const latest=await response.json();
+      const registrations=await navigator.serviceWorker?.getRegistrations?.()||[];
+      await Promise.all(registrations.map(registration=>registration.update()));
+      const found=latest?.version&&latest.version!==RELEASE.version;
+      toast(found?`Versão ${latest.version} encontrada. Atualizando...`:'Já está na versão mais recente. Recarregando...');
+      setTimeout(()=>location.replace(`${location.pathname}?update=${Date.now()}`),550);
+    }catch(error){
+      console.error(error);
+      toast('Não foi possível buscar atualização agora.');
+      if(button){button.disabled=false;button.classList.remove('is-checking');}
+    }
+  }
+
   function switchTab(name){
     document.querySelectorAll('.view').forEach(view=>{
       view.classList.toggle('active',view.dataset.view===name);
@@ -856,6 +875,7 @@
   document.getElementById('editEventButton')?.addEventListener('click',openEditEventSheet);
   document.getElementById('deleteEventButton')?.addEventListener('click',deleteSelectedEvent);
   document.getElementById('saveEventButton')?.addEventListener('click',createEvent);
+  document.getElementById('checkUpdateButton')?.addEventListener('click',checkForUpdate);
   eventTypeInput?.addEventListener('change',()=>setEventFormType(eventTypeInput.value));
   document.querySelectorAll('[data-close-event-sheet]').forEach(el=>el.addEventListener('click',closeEventSheet));
 
