@@ -8,7 +8,7 @@
 
   const STORAGE_KEY='crono-settings-v1';
   const EVENTS_KEY='crono-events-v1';
-  const DEFAULTS={theme:'system',visualStyle:'optimized'};
+  const DEFAULTS={theme:'system',visualStyle:'optimized',collapsedSleepIntervals:{}};
 
   const CURVES={
     ios:'cubic-bezier(.2,.8,.2,1)',
@@ -238,6 +238,7 @@
   const DAY_MS=86400000;
   const TIMELINE_BASE_HEIGHT=720;
   const COLLISION_MINUTES=24;
+  const COLLAPSED_SLEEP_HEIGHT=92;
   const SLEEP_ICON=`<svg viewBox="0 0 19.3281 23.8828" aria-hidden="true"><path d="M14.2891 4.1875L11.9609 4.1875L11.9609 4.13281L14.3281 1.03125C14.5234.78125 14.6016.632812 14.6016.460938C14.6016.171875 14.375 0 14.0703 0L10.9453 0C10.6719 0 10.4688.1875 10.4688.453125C10.4688.742188 10.6719.921875 10.9453.921875L13.1484.921875L13.1484.976562L10.7578 4.07031C10.5703 4.32031 10.4922 4.45312 10.4922 4.64844C10.4922 4.92188 10.7031 5.10938 11.0078 5.10938L14.2891 5.10938C14.5625 5.10938 14.7578 4.92969 14.7578 4.64062C14.7578 4.375 14.5625 4.1875 14.2891 4.1875ZM18.875 7.98438L17.1641 7.98438L17.1641 7.9375L18.9141 5.66406C19.0938 5.42969 19.1719 5.28906 19.1719 5.11719C19.1719 4.84375 18.9531 4.67188 18.6641 4.67188L16.2266 4.67188C15.9688 4.67188 15.7734 4.85156 15.7734 5.10938C15.7734 5.39062 15.9688 5.5625 16.2266 5.5625L17.7891 5.5625L17.7891 5.60156L16.0469 7.875C15.875 8.10156 15.8047 8.24219 15.8047 8.42969C15.8047 8.6875 16 8.86719 16.2891 8.86719L18.875 8.86719C19.1406 8.86719 19.3281 8.69531 19.3281 8.42969C19.3281 8.16406 19.1406 7.98438 18.875 7.98438ZM14.5234 11.3438L13.0859 11.3438L13.0859 11.3047L14.5547 9.375C14.7266 9.14062 14.8047 9.01562 14.8047 8.85156C14.8047 8.58594 14.5938 8.42969 14.3203 8.42969L12.1953 8.42969C11.9453 8.42969 11.7578 8.60156 11.7578 8.84375C11.7578 9.10938 11.9453 9.27344 12.1953 9.27344L13.4844 9.27344L13.4844 9.3125L12.0234 11.2422C11.8594 11.4609 11.7812 11.5859 11.7812 11.7734C11.7812 12.0156 11.9766 12.1953 12.25 12.1953L14.5234 12.1953C14.7734 12.1953 14.9453 12.0234 14.9453 11.7656C14.9453 11.5156 14.7734 11.3438 14.5234 11.3438Z" fill="currentColor"/><path d="M8.71875 22.6172C12.2891 22.6172 15.2188 20.4609 16.4922 17.6562C16.7422 17.1562 16.4297 16.8125 15.9375 16.9688C15.3516 17.1797 14.3203 17.4141 13.2812 17.4141C8.30469 17.4141 5.46094 14.5703 5.46094 9.57812C5.46094 8.58594 5.67188 7.57031 5.99219 6.76562C6.21094 6.22656 5.84375 5.90625 5.32812 6.13281C2.55469 7.3125.132812 10.2656.132812 14.0234C.132812 18.7656 3.97656 22.6172 8.71875 22.6172Z" fill="currentColor"/></svg>`;
 
   function startOfLocalDay(date=new Date()){
@@ -300,6 +301,33 @@
     return null;
   }
 
+  function normalizeEventType(type){
+    return ['event','sleep_start','sleep_end'].includes(type)?type:'event';
+  }
+
+  function isSleepType(type){
+    return normalizeEventType(type)!=='event';
+  }
+
+  function titleForEventType(type){
+    return type==='sleep_start'?'Vou dormir':type==='sleep_end'?'Acordei':'';
+  }
+
+  function hasValidSleepSequence(items){
+    let open=false;
+    for(const event of [...items].sort((a,b)=>new Date(a.at)-new Date(b.at))){
+      const type=normalizeEventType(event.type);
+      if(type==='sleep_start'){
+        if(open)return false;
+        open=true;
+      }else if(type==='sleep_end'){
+        if(!open)return false;
+        open=false;
+      }
+    }
+    return true;
+  }
+
   function activeSleepStart(){
     let open=null;
     [...events].sort((a,b)=>new Date(a.at)-new Date(b.at)).forEach(event=>{
@@ -316,22 +344,22 @@
     const intervals=[];
     let start=null;
     sorted.forEach(event=>{
-      if(event.type==='sleep_start')start=new Date(event.at);
+      if(event.type==='sleep_start')start={at:new Date(event.at),id:event.id};
       if(event.type==='sleep_end'&&start){
         const end=new Date(event.at);
-        if(end>start){
-          const from=new Date(Math.max(start.getTime(),dayStart.getTime()));
+        if(end>start.at){
+          const from=new Date(Math.max(start.at.getTime(),dayStart.getTime()));
           const to=new Date(Math.min(end.getTime(),dayEnd.getTime()));
-          if(to>from)intervals.push({from,to});
+          if(to>from)intervals.push({from,to,id:`${start.id}:${event.id}`,startEventId:start.id,endEventId:event.id});
         }
         start=null;
       }
     });
     if(start){
       const end=new Date();
-      const from=new Date(Math.max(start.getTime(),dayStart.getTime()));
+      const from=new Date(Math.max(start.at.getTime(),dayStart.getTime()));
       const to=new Date(Math.min(end.getTime(),dayEnd.getTime()));
-      if(to>from)intervals.push({from,to,active:true});
+      if(to>from)intervals.push({from,to,id:`${start.id}:active`,startEventId:start.id,active:true});
     }
     return intervals;
   }
@@ -365,6 +393,49 @@
     toast(type==='sleep_start'?`Início do sono registrado às ${formatTime(now)}.`:`Acordei registrado às ${formatTime(now)}.`);
   }
 
+  function sleepCollapseKey(interval,date){
+    return `${interval.id}:${dayKey(date)}`;
+  }
+
+  function intervalHasOtherEvents(interval){
+    return events.some(event=>{
+      if(event.id===interval.startEventId||event.id===interval.endEventId)return false;
+      const at=new Date(event.at);
+      return at>interval.from&&at<interval.to;
+    });
+  }
+
+  function buildTimelineLayout(date,height,intervals){
+    const dayStart=startOfLocalDay(date);
+    const collapsed=settings.collapsedSleepIntervals||{};
+    let removed=0;
+    const bands=intervals.map(interval=>{
+      const fromMinutes=(interval.from-dayStart)/60000;
+      const toMinutes=(interval.to-dayStart)/60000;
+      const naturalHeight=((toMinutes-fromMinutes)/1440)*height;
+      const key=sleepCollapseKey(interval,date);
+      const canCollapse=!interval.active&&!intervalHasOtherEvents(interval)&&naturalHeight>COLLAPSED_SLEEP_HEIGHT+18;
+      const isCollapsed=canCollapse&&Boolean(collapsed[key]);
+      const bandHeight=isCollapsed?COLLAPSED_SLEEP_HEIGHT:naturalHeight;
+      const top=(fromMinutes/1440)*height-removed;
+      if(isCollapsed)removed+=naturalHeight-bandHeight;
+      return {...interval,fromMinutes,toMinutes,key,canCollapse,isCollapsed,top,bandHeight};
+    });
+    const yForMinutes=minutes=>{
+      let shift=0;
+      for(const band of bands){
+        if(!band.isCollapsed)continue;
+        if(minutes>=band.toMinutes){
+          shift+=((band.toMinutes-band.fromMinutes)/1440)*height-band.bandHeight;
+        }else if(minutes>band.fromMinutes){
+          return band.top+((minutes-band.fromMinutes)/(band.toMinutes-band.fromMinutes))*band.bandHeight;
+        }
+      }
+      return (minutes/1440)*height-shift;
+    };
+    return {bands,yForMinutes,height:height-removed};
+  }
+
   function renderTimeline(target,date,{zoom=1,compact=false,throughNow=false}={}){
     if(!target)return;
     const currentDay=throughNow&&dayKey(date)===dayKey(new Date());
@@ -372,25 +443,27 @@
     const scaleMinutes=1440;
     const dayEvents=eventsForDay(date).filter(event=>!currentDay||minutesOfDay(event.at)<=endMinutes);
     const height=Math.round(TIMELINE_BASE_HEIGHT*zoom);
+    const sleepLayout=buildTimelineLayout(date,height,sleepIntervalsForDay(date));
     let collisionRun=0;
     let previousMinutes=-Infinity;
 
-    const sleepMarkup=sleepIntervalsForDay(date).map(interval=>{
-      const dayStart=startOfLocalDay(date);
-      const fromMinutes=(interval.from-dayStart)/60000;
-      const toMinutes=(interval.to-dayStart)/60000;
-      const top=(fromMinutes/scaleMinutes)*height;
-      const bandHeight=Math.max(2,((toMinutes-fromMinutes)/scaleMinutes)*height);
+    const sleepMarkup=sleepLayout.bands.map(interval=>{
       const icons=Array.from({length:18},()=>`<span>${SLEEP_ICON}</span>`).join('');
-      return `<div class="sleep-interval${interval.active?' active':''}" style="top:${top}px;height:${bandHeight}px" aria-label="Período de sono"><div class="sleep-pattern" aria-hidden="true">${icons}</div></div>`;
+      const duration=formatElapsedDuration(interval.to-interval.from);
+      const toggle=interval.canCollapse?`<button class="sleep-interval-toggle" type="button" data-sleep-toggle="${escapeHtml(interval.key)}" aria-label="${interval.isCollapsed?'Expandir':'Encolher'} período de sono">${interval.isCollapsed?'Expandir':'Encolher'}</button>`:'';
+      const compact=interval.isCollapsed?`<div class="sleep-collapsed-copy"><strong>Dormi ${duration}</strong>${toggle}</div>`:`<div class="sleep-pattern" aria-hidden="true">${icons}</div>${toggle}`;
+      return `<div class="sleep-interval${interval.active?' active':''}${interval.isCollapsed?' collapsed':''}" style="top:${interval.top}px;height:${Math.max(2,interval.bandHeight)}px" aria-label="Período de sono de ${duration}">${compact}</div>`;
     }).join('');
 
-    const eventMarkup=dayEvents.map(event=>{
+    const hiddenSleepEndpointIds=new Set(sleepLayout.bands.filter(interval=>interval.isCollapsed).flatMap(interval=>[interval.startEventId,interval.endEventId].filter(Boolean)));
+    const visibleDayEvents=dayEvents.filter(event=>!hiddenSleepEndpointIds.has(event.id));
+
+    const eventMarkup=visibleDayEvents.map(event=>{
       const minute=minutesOfDay(event.at);
       collisionRun=minute-previousMinutes<COLLISION_MINUTES?collisionRun+1:0;
       previousMinutes=minute;
       const side=collisionRun%2===0?'right':'left';
-      const top=(minute/scaleMinutes)*height;
+      const top=sleepLayout.yForMinutes(minute);
       const kind=eventKind(event);
       const kindMarkup=kind?`<span class="timeline-event-kind" aria-hidden="true">${kind.icon}</span>`:'';
       const kindLabel=kind?`, ${kind.label}`:'';
@@ -404,27 +477,31 @@
       </button>`;
     }).join('');
 
-    const gapMarkup=dayEvents.slice(1).map((event,index)=>{
-      const previous=dayEvents[index];
+    const gapMarkup=visibleDayEvents.slice(1).map((event,index)=>{
+      const previous=visibleDayEvents[index];
       const previousAt=new Date(previous.at);
       const currentAt=new Date(event.at);
       const elapsed=currentAt-previousAt;
       if(!(elapsed>0))return '';
       const previousMinute=minutesOfDay(previous.at);
       const currentMinute=minutesOfDay(event.at);
-      const top=(((previousMinute+currentMinute)/2)/scaleMinutes)*height;
+      const hasCollapsedSleepBetween=sleepLayout.bands.some(interval=>interval.isCollapsed&&previousMinute<=interval.fromMinutes&&currentMinute>=interval.toMinutes);
+      if(hasCollapsedSleepBetween)return '';
+      const top=sleepLayout.yForMinutes((previousMinute+currentMinute)/2);
       const label=formatElapsedDuration(elapsed);
       return `<div class="timeline-gap" style="top:${top}px" aria-label="${escapeHtml(label)} entre ${escapeHtml(previous.title)} e ${escapeHtml(event.title)}"><span class="timeline-gap-value">${escapeHtml(label)}</span></div>`;
     }).join('');
 
     const hourLabels=[0,6,12,18,24].filter(hour=>hour*60<=scaleMinutes).map(hour=>{
-      const top=((hour*60)/scaleMinutes)*height;
+      const minute=hour*60;
+      if(sleepLayout.bands.some(interval=>interval.isCollapsed&&minute>interval.fromMinutes&&minute<interval.toMinutes))return '';
+      const top=sleepLayout.yForMinutes(minute);
       const label=hour===24?'24:00':`${String(hour).padStart(2,'0')}:00`;
       return `<span class="timeline-hour" style="top:${top}px">${label}</span>`;
     }).join('');
 
     target.innerHTML=`<article class="day-timeline-card${compact?' compact':''}${currentDay?' current-day':''}" data-day="${dayKey(date)}">
-      <div class="timeline-canvas" style="height:${height}px">
+      <div class="timeline-canvas" style="height:${sleepLayout.height}px">
         <div class="timeline-axis" aria-hidden="true"></div>
         ${sleepMarkup}
         ${hourLabels}
@@ -436,6 +513,14 @@
 
     target.querySelectorAll('[data-event-id]').forEach(button=>{
       button.addEventListener('click',()=>openEventDetails(button.dataset.eventId));
+    });
+    target.querySelectorAll('[data-sleep-toggle]').forEach(button=>{
+      button.addEventListener('click',()=>{
+        const key=button.dataset.sleepToggle;
+        settings.collapsedSleepIntervals={...(settings.collapsedSleepIntervals||{}),[key]:!(settings.collapsedSleepIntervals||{})[key]};
+        saveSettings();
+        renderChronology();
+      });
     });
   }
 
@@ -548,15 +633,35 @@
   }
 
   const eventSheet=document.getElementById('eventSheet');
+  const eventTypeInput=document.getElementById('eventTypeInput');
   const eventTitleInput=document.getElementById('eventTitleInput');
   const eventDateTimeInput=document.getElementById('eventDateTimeInput');
   const eventNotesInput=document.getElementById('eventNotesInput');
+
+  function setEventFormType(type,{preserveGeneralTitle=true}={}){
+    const normalized=normalizeEventType(type);
+    const wasSleep=isSleepType(eventTypeInput?.dataset.previousType);
+    if(eventTypeInput)eventTypeInput.value=normalized;
+    if(!eventTitleInput)return;
+    if(isSleepType(normalized)){
+      if(!wasSleep&&preserveGeneralTitle)eventTitleInput.dataset.generalTitle=eventTitleInput.value;
+      eventTitleInput.value=titleForEventType(normalized);
+      eventTitleInput.disabled=true;
+    }else{
+      eventTitleInput.disabled=false;
+      eventTitleInput.value=eventTitleInput.dataset.generalTitle||'';
+      eventTitleInput.placeholder='O que aconteceu?';
+    }
+    if(eventTypeInput)eventTypeInput.dataset.previousType=normalized;
+  }
 
   function openEventSheet(){
     if(!eventSheet)return;
     editingEventId=null;
     document.getElementById('eventSheetTitle').textContent='Novo evento';
+    eventTitleInput.dataset.generalTitle='';
     eventTitleInput.value='';
+    setEventFormType('event',{preserveGeneralTitle:false});
     eventDateTimeInput.value=toLocalDateTimeValue();
     eventNotesInput.value='';
     eventSheet.hidden=false;
@@ -573,7 +678,9 @@
     if(!event)return;
     editingEventId=event.id;
     document.getElementById('eventSheetTitle').textContent='Editar evento';
+    eventTitleInput.dataset.generalTitle=normalizeEventType(event.type)==='event'?event.title:'';
     eventTitleInput.value=event.title;
+    setEventFormType(event.type,{preserveGeneralTitle:false});
     eventDateTimeInput.value=toLocalDateTimeValue(new Date(event.at));
     eventNotesInput.value=event.notes||'';
     closeEventDetails();
@@ -592,7 +699,8 @@
   }
 
   function createEvent(){
-    const title=eventTitleInput?.value.trim()||'';
+    const type=normalizeEventType(eventTypeInput?.value);
+    const title=isSleepType(type)?titleForEventType(type):(eventTitleInput?.value.trim()||'');
     const rawDate=eventDateTimeInput?.value||'';
     if(!title){
       eventTitleInput?.focus();
@@ -605,14 +713,22 @@
       return;
     }
     const existing=editingEventId&&events.find(item=>item.id===editingEventId);
+    const candidate=existing
+      ? events.map(item=>item.id===existing.id?{...item,title,type,at:at.toISOString()}:item)
+      : [...events,{id:'candidate',type,at:at.toISOString()}];
+    if(!hasValidSleepSequence(candidate)){
+      toast('Esse tipo deixaria o sono inválido. Use a sequência Dormi → Acordei.');
+      return;
+    }
     if(existing){
       existing.title=title;
+      existing.type=type;
       existing.at=at.toISOString();
       existing.notes=eventNotesInput?.value.trim()||'';
     }else{
       events.push({
         id:(crypto.randomUUID?.()||`evt-${Date.now()}-${Math.random().toString(16).slice(2)}`),
-        type:'event',
+        type,
         title,
         at:at.toISOString(),
         notes:eventNotesInput?.value.trim()||'',
@@ -740,6 +856,7 @@
   document.getElementById('editEventButton')?.addEventListener('click',openEditEventSheet);
   document.getElementById('deleteEventButton')?.addEventListener('click',deleteSelectedEvent);
   document.getElementById('saveEventButton')?.addEventListener('click',createEvent);
+  eventTypeInput?.addEventListener('change',()=>setEventFormType(eventTypeInput.value));
   document.querySelectorAll('[data-close-event-sheet]').forEach(el=>el.addEventListener('click',closeEventSheet));
 
   document.getElementById('eventTitleInput')?.addEventListener('keydown',event=>{
