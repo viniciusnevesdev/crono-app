@@ -974,10 +974,12 @@ html[data-visual-style="ultra"] .update-button{border-color:color-mix(in srgb,va
 .goal-detail-actions .goal-detail-edit{color:var(--accent)}
 .goal-detail-actions .goal-detail-delete{color:#ff3b30}
 .goal-edit-form{display:flex;flex-wrap:wrap}
+.goal-edit-form[hidden]{display:none}
 .goal-edit-form input{flex:1 1 100%;width:100%;padding:10px 4px}
 .goal-edit-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;padding-top:4px}
 .goal-edit-actions button[type="submit"]{border-color:var(--accent);background:var(--accent);color:#fff}
 .goal-edit-warning{display:grid;gap:6px;padding:16px;margin-top:12px;border:1px solid color-mix(in srgb,#ff9f0a 35%,var(--line));border-radius:18px;background:color-mix(in srgb,#ff9f0a 8%,var(--card));color:var(--text)}
+.goal-edit-warning[hidden]{display:none}
 .goal-edit-warning strong{font-size:15px;line-height:20px}
 .goal-edit-warning span{color:var(--secondary);font-size:13px;line-height:18px}
 .goal-edit-warning-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
