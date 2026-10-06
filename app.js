@@ -68,6 +68,8 @@
   let timelineZoom=1;
   let selectedEventId=null;
   let editingEventId=null;
+  let pendingTimelineTap=null;
+  let pendingTimelineTapTimer=null;
 
   function saveEvents(){
     localStorage.setItem(EVENTS_KEY,JSON.stringify(events));
@@ -75,6 +77,13 @@
 
   function saveSettings(){
     localStorage.setItem(STORAGE_KEY,JSON.stringify(settings));
+  }
+
+  function clearPendingTimelineTap(){
+    if(pendingTimelineTapTimer)clearTimeout(pendingTimelineTapTimer);
+    pendingTimelineTapTimer=null;
+    document.querySelectorAll('.timeline-pending-dot').forEach(dot=>dot.remove());
+    pendingTimelineTap=null;
   }
 
   function systemDark(){
@@ -435,7 +444,16 @@
       }
       return (minutes/1440)*height-shift;
     };
-    return {bands,yForMinutes,height:height-removed};
+    const minutesForY=y=>{
+      let low=0,high=1440;
+      for(let i=0;i<28;i++){
+        const middle=(low+high)/2;
+        if(yForMinutes(middle)<y)low=middle;
+        else high=middle;
+      }
+      return (low+high)/2;
+    };
+    return {bands,yForMinutes,minutesForY,height:height-removed};
   }
 
   function renderTimeline(target,date,{zoom=1,compact=false,throughNow=false}={}){
@@ -524,6 +542,34 @@
         renderChronology();
       });
     });
+    const canvas=target.querySelector('.timeline-canvas');
+    if(canvas){
+      canvas.addEventListener('click',event=>{
+        if(event.target.closest('button,.sleep-interval-toggle,.timeline-pending-dot'))return;
+        const rect=canvas.getBoundingClientRect();
+        const axisX=rect.left+rect.width*.41;
+        if(Math.abs(event.clientX-axisX)>28)return;
+        const y=Math.max(0,Math.min(sleepLayout.height,event.clientY-rect.top));
+        const minutes=Math.max(0,Math.min(1439,Math.round(sleepLayout.minutesForY(y))));
+        clearPendingTimelineTap();
+        const dot=document.createElement('button');
+        dot.type='button';
+        dot.className='timeline-pending-dot';
+        dot.setAttribute('aria-label','Criar evento neste horário');
+        dot.style.top=`${sleepLayout.yForMinutes(minutes)}px`;
+        dot.addEventListener('click',event2=>{
+          event2.stopPropagation();
+          clearPendingTimelineTap();
+          const initialDate=new Date(date);
+          initialDate.setHours(0,0,0,0);
+          initialDate.setMinutes(minutes);
+          openEventSheet(initialDate);
+        });
+        canvas.appendChild(dot);
+        pendingTimelineTap={canvas,minutes};
+        pendingTimelineTapTimer=setTimeout(clearPendingTimelineTap,5000);
+      });
+    }
   }
 
   function renderHomeTimelines(){
@@ -657,14 +703,14 @@
     if(eventTypeInput)eventTypeInput.dataset.previousType=normalized;
   }
 
-  function openEventSheet(){
+  function openEventSheet(initialDate=null){
     if(!eventSheet)return;
     editingEventId=null;
     document.getElementById('eventSheetTitle').textContent='Novo evento';
     eventTitleInput.dataset.generalTitle='';
     eventTitleInput.value='';
     setEventFormType('event',{preserveGeneralTitle:false});
-    eventDateTimeInput.value=toLocalDateTimeValue();
+    eventDateTimeInput.value=toLocalDateTimeValue(initialDate||new Date());
     eventNotesInput.value='';
     eventSheet.hidden=false;
     requestAnimationFrame(()=>eventTitleInput.focus());
