@@ -61,6 +61,7 @@
   let events=loadEvents();
   let procrastinatedItems=loadProcrastinatedItems();
   let timelineZoom=1;
+  let yesterdayTimelineZoom=1;
   let selectedEventId=null;
   let editingEventId=null;
   let pendingTimelineTap=null;
@@ -113,6 +114,59 @@
     pendingTimelineTapTimer=null;
     document.querySelectorAll('.timeline-pending-dot').forEach(dot=>dot.remove());
     pendingTimelineTap=null;
+  }
+
+  function normalizeTimelineZoom(value){
+    return Math.round(Math.max(.5,Math.min(4,value))*4)/4;
+  }
+
+  function enableTimelinePinch(canvas,zoom,onZoomChange){
+    if(!canvas||!onZoomChange)return;
+    const pointers=new Map();
+    let initialDistance=0;
+    let lastDistance=0;
+    let initialZoom=zoom;
+    let pinching=false;
+    let ignoreClickUntil=0;
+    const distance=()=>{
+      const [first,second]=[...pointers.values()];
+      return first&&second?Math.hypot(first.x-second.x,first.y-second.y):0;
+    };
+    const finish=()=>{
+      if(!pinching)return;
+      pinching=false;
+      ignoreClickUntil=Date.now()+500;
+      if(initialDistance&&Math.abs(lastDistance-initialDistance)>10){
+        const nextZoom=normalizeTimelineZoom(initialZoom*(lastDistance/initialDistance));
+        if(Math.abs(nextZoom-initialZoom)>=.12)onZoomChange(nextZoom);
+      }
+    };
+    canvas.addEventListener('pointerdown',event=>{
+      if(event.pointerType!=='touch')return;
+      pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+      if(pointers.size===2){
+        initialDistance=distance();
+        lastDistance=initialDistance;
+        initialZoom=zoom;
+        pinching=true;
+      }
+    });
+    canvas.addEventListener('pointermove',event=>{
+      if(!pointers.has(event.pointerId))return;
+      pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+      if(pinching&&pointers.size>=2){
+        lastDistance=distance();
+        event.preventDefault();
+      }
+    },{passive:false});
+    const end=event=>{
+      if(!pointers.has(event.pointerId))return;
+      pointers.delete(event.pointerId);
+      if(pointers.size<2)finish();
+    };
+    canvas.addEventListener('pointerup',end);
+    canvas.addEventListener('pointercancel',end);
+    return ()=>Date.now()<ignoreClickUntil;
   }
 
   function systemDark(){
@@ -485,7 +539,7 @@
     return {bands,yForMinutes,minutesForY,height:height-removed};
   }
 
-  function renderTimeline(target,date,{zoom=1,compact=false,throughNow=false}={}){
+  function renderTimeline(target,date,{zoom=1,compact=false,throughNow=false,onZoomChange=null}={}){
     if(!target)return;
     const currentDay=throughNow&&dayKey(date)===dayKey(new Date());
     const endMinutes=currentDay?Math.max(1,minutesOfDay(new Date())):1440;
@@ -573,7 +627,9 @@
     });
     const canvas=target.querySelector('.timeline-canvas');
     if(canvas){
+      const shouldIgnoreTimelineClick=enableTimelinePinch(canvas,zoom,onZoomChange);
       canvas.addEventListener('click',event=>{
+        if(shouldIgnoreTimelineClick?.())return;
         if(event.target.closest('button,.sleep-interval-toggle,.timeline-pending-dot'))return;
         const rect=canvas.getBoundingClientRect();
         const axisX=rect.left+rect.width*.41;
@@ -605,10 +661,16 @@
     const today=startOfLocalDay();
     const yesterday=new Date(today);
     yesterday.setDate(yesterday.getDate()-1);
-    renderTimeline(document.getElementById('todayTimeline'),today,{zoom:timelineZoom,throughNow:true});
-    renderTimeline(document.getElementById('yesterdayTimeline'),yesterday,{zoom:1,compact:true});
+    renderTimeline(document.getElementById('todayTimeline'),today,{zoom:timelineZoom,throughNow:true,onZoomChange:nextZoom=>{
+      timelineZoom=nextZoom;
+      renderHomeTimelines();
+    }});
+    renderTimeline(document.getElementById('yesterdayTimeline'),yesterday,{zoom:yesterdayTimelineZoom,compact:true,onZoomChange:nextZoom=>{
+      yesterdayTimelineZoom=nextZoom;
+      renderHomeTimelines();
+    }});
     document.querySelectorAll('[data-timeline-zoom]').forEach(button=>{
-      button.classList.toggle('selected',Number(button.dataset.timelineZoom)===timelineZoom);
+      button.classList.toggle('selected',Math.abs(Number(button.dataset.timelineZoom)-timelineZoom)<.05);
     });
   }
 
@@ -653,7 +715,12 @@
         holder.hidden=!opening;
         button.setAttribute('aria-expanded',String(opening));
         if(opening&&!holder.dataset.rendered){
-          renderTimeline(holder,new Date(`${key}T12:00:00`),{zoom:1});
+          const date=new Date(`${key}T12:00:00`);
+          const renderHistoryTimeline=()=>renderTimeline(holder,date,{zoom:Number(holder.dataset.timelineZoom)||1,onZoomChange:nextZoom=>{
+            holder.dataset.timelineZoom=String(nextZoom);
+            renderHistoryTimeline();
+          }});
+          renderHistoryTimeline();
           holder.dataset.rendered='true';
         }
       });
@@ -944,6 +1011,10 @@
   updateEventSummary();
   renderChronology();
   scrollToPresent();
+
+  ['gesturestart','gesturechange','gestureend'].forEach(type=>{
+    document.addEventListener(type,event=>event.preventDefault(),{passive:false});
+  });
 
   document.getElementById('createEventButton')?.addEventListener('click',openEventSheet);
   document.getElementById('procrastinatedButton')?.addEventListener('click',()=>showProcrastinatedView(true));
