@@ -62,6 +62,8 @@
   let events=loadEvents();
   let goals=loadGoals();
   let procrastinatedItems=loadProcrastinatedItems();
+  let selectedGoalIndex=null;
+  let goalIsEditing=false;
   let timelineZoom=1;
   let yesterdayTimelineZoom=1;
   let selectedEventId=null;
@@ -107,11 +109,71 @@
     if(show)requestAnimationFrame(()=>document.getElementById('goalCardInput')?.focus());
   }
 
+  function openGoalDetails(index){
+    const modal=document.getElementById('goalDetailsModal');
+    const text=document.getElementById('goalDetailText');
+    if(!modal||!goals[index])return;
+    selectedGoalIndex=index;
+    goalIsEditing=false;
+    document.getElementById('goalDetailsTitle').textContent='Meta';
+    text.textContent=goals[index];
+    document.getElementById('goalDetailView').hidden=false;
+    document.getElementById('goalEditForm').hidden=true;
+    document.getElementById('goalEditWarning').hidden=true;
+    modal.hidden=false;
+    setNavigationHidden(true);
+  }
+
+  function finishGoalDetails(){
+    const modal=document.getElementById('goalDetailsModal');
+    if(modal)modal.hidden=true;
+    selectedGoalIndex=null;
+    goalIsEditing=false;
+    setNavigationHidden(false);
+  }
+
+  function showGoalEditWarning(show){
+    const warning=document.getElementById('goalEditWarning');
+    if(warning)warning.hidden=!show;
+  }
+
+  function closeGoalDetails(){
+    if(goalIsEditing){showGoalEditWarning(true);return}
+    finishGoalDetails();
+  }
+
+  function beginGoalEdit(){
+    if(selectedGoalIndex===null)return;
+    goalIsEditing=true;
+    document.getElementById('goalEditInput').value=goals[selectedGoalIndex]||'';
+    document.getElementById('goalDetailView').hidden=true;
+    document.getElementById('goalEditForm').hidden=false;
+    showGoalEditWarning(false);
+    requestAnimationFrame(()=>document.getElementById('goalEditInput')?.focus());
+  }
+
+  function saveGoalEdit(){
+    if(selectedGoalIndex===null)return;
+    const value=document.getElementById('goalEditInput')?.value.trim()||'';
+    if(!value)return;
+    goals[selectedGoalIndex]=value;
+    saveGoals();
+    renderGoalCards();
+    finishGoalDetails();
+  }
+
+  function discardGoalEdit(){
+    goalIsEditing=false;
+    showGoalEditWarning(false);
+    finishGoalDetails();
+  }
+
   function renderGoalCards(){
     const grid=document.getElementById('goalsGrid');
     if(!grid)return;
-    grid.innerHTML=`<button class="goal-add-card" id="addGoalCardButton" type="button"><span class="goal-add-mark" aria-hidden="true">+</span><strong>Adicionar</strong></button>${goals.map(item=>`<article class="goal-card"><span>${escapeHtml(item)}</span></article>`).join('')}`;
+    grid.innerHTML=`<button class="goal-add-card" id="addGoalCardButton" type="button"><span class="goal-add-mark" aria-hidden="true">+</span><strong>Adicionar</strong></button>${goals.map((item,index)=>`<button class="goal-card" type="button" data-goal-index="${index}"><span>${escapeHtml(item)}</span></button>`).join('')}`;
     grid.querySelector('#addGoalCardButton')?.addEventListener('click',()=>showGoalModal(true));
+    grid.querySelectorAll('[data-goal-index]').forEach(card=>card.addEventListener('click',()=>openGoalDetails(Number(card.dataset.goalIndex))));
   }
 
   function renderProcrastinatedItems(){
@@ -1090,6 +1152,28 @@
     renderGoalCards();
   });
   document.querySelectorAll('[data-close-goal-modal]').forEach(button=>button.addEventListener('click',()=>showGoalModal(false)));
+  document.querySelectorAll('[data-close-goal-details]').forEach(button=>button.addEventListener('click',closeGoalDetails));
+  document.getElementById('editGoalButton')?.addEventListener('click',beginGoalEdit);
+  document.getElementById('deleteGoalButton')?.addEventListener('click',()=>{
+    if(selectedGoalIndex===null)return;
+    if(!window.confirm('Apagar esta meta?'))return;
+    goals.splice(selectedGoalIndex,1);
+    saveGoals();
+    renderGoalCards();
+    finishGoalDetails();
+  });
+  document.getElementById('goalEditForm')?.addEventListener('submit',event=>{
+    event.preventDefault();
+    saveGoalEdit();
+  });
+  document.querySelector('[data-cancel-goal-edit]')?.addEventListener('click',()=>{
+    goalIsEditing=false;
+    showGoalEditWarning(false);
+    document.getElementById('goalEditForm').hidden=true;
+    document.getElementById('goalDetailView').hidden=false;
+  });
+  document.querySelector('[data-discard-goal-edit]')?.addEventListener('click',discardGoalEdit);
+  document.querySelector('[data-save-goal-edit]')?.addEventListener('click',saveGoalEdit);
   document.getElementById('procrastinatedForm')?.addEventListener('submit',event=>{
     event.preventDefault();
     const input=document.getElementById('procrastinatedInput');
