@@ -450,10 +450,9 @@
     let previousMinutes=-Infinity;
 
     const sleepMarkup=sleepLayout.bands.map(interval=>{
-      const icons=Array.from({length:18},()=>`<span>${SLEEP_ICON}</span>`).join('');
       const duration=formatElapsedDuration(interval.to-interval.from);
       const toggle=interval.canCollapse?`<button class="sleep-interval-toggle" type="button" data-sleep-toggle="${escapeHtml(interval.key)}" aria-label="${interval.isCollapsed?'Expandir':'Encolher'} período de sono">${interval.isCollapsed?EXPAND_ICON:COLLAPSE_ICON}</button>`:'';
-      const compact=interval.isCollapsed?`<div class="sleep-collapsed-copy"><strong>Dormi ${duration}</strong>${toggle}</div>`:`<div class="sleep-pattern" aria-hidden="true">${icons}</div>${toggle}`;
+      const compact=interval.isCollapsed?`<div class="sleep-collapsed-copy"><strong>Dormi ${duration}</strong>${toggle}</div>`:toggle;
       return `<div class="sleep-interval${interval.active?' active':''}${interval.isCollapsed?' collapsed':''}" style="top:${interval.top}px;height:${Math.max(2,interval.bandHeight)}px" aria-label="Período de sono de ${duration}">${compact}</div>`;
     }).join('');
 
