@@ -973,12 +973,12 @@ html[data-visual-style="ultra"] .update-button{border-color:color-mix(in srgb,va
 .goal-detail-actions button,.goal-edit-actions button,.goal-edit-warning-actions button{min-height:40px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font:inherit;font-size:13px;font-weight:720}
 .goal-detail-actions .goal-detail-edit{color:var(--accent)}
 .goal-detail-actions .goal-detail-delete{color:#ff3b30}
-.goal-edit-form{display:flex;flex-wrap:wrap}
+.goal-edit-form{display:grid;gap:12px;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none!important}
 .goal-edit-form[hidden]{display:none}
-.goal-edit-form input{flex:1 1 100%;width:100%;padding:10px 4px}
-.goal-edit-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;padding-top:4px}
+.goal-edit-form input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:18px;background:var(--card);padding:14px;color:var(--text);font:inherit;font-size:16px;line-height:22px}
+.goal-edit-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;padding:0}
 .goal-edit-actions button[type="submit"]{border-color:var(--accent);background:var(--accent);color:#fff}
-.goal-edit-warning{display:grid;gap:6px;padding:16px;margin-top:12px;border:1px solid color-mix(in srgb,#ff9f0a 35%,var(--line));border-radius:18px;background:color-mix(in srgb,#ff9f0a 8%,var(--card));color:var(--text)}
+.goal-edit-warning{display:grid;gap:6px;padding:16px;margin:0;border:1px solid color-mix(in srgb,#ff9f0a 35%,var(--line));border-radius:18px;background:color-mix(in srgb,#ff9f0a 8%,var(--card));color:var(--text)}
 .goal-edit-warning[hidden]{display:none}
 .goal-edit-warning strong{font-size:15px;line-height:20px}
 .goal-edit-warning span{color:var(--secondary);font-size:13px;line-height:18px}
