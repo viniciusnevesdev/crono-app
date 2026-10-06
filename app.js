@@ -99,14 +99,19 @@
     localStorage.setItem(GOALS_KEY,JSON.stringify(goals));
   }
 
+  function showGoalModal(show){
+    const modal=document.getElementById('goalModal');
+    if(!modal)return;
+    modal.hidden=!show;
+    setNavigationHidden(show);
+    if(show)requestAnimationFrame(()=>document.getElementById('goalCardInput')?.focus());
+  }
+
   function renderGoalCards(){
     const grid=document.getElementById('goalsGrid');
     if(!grid)return;
     grid.innerHTML=`<button class="goal-add-card" id="addGoalCardButton" type="button"><span class="goal-add-mark" aria-hidden="true">+</span><strong>Adicionar</strong></button>${goals.map(item=>`<article class="goal-card"><span>${escapeHtml(item)}</span></article>`).join('')}`;
-    grid.querySelector('#addGoalCardButton')?.addEventListener('click',()=>{
-      const form=document.getElementById('goalCardForm');
-      if(form){form.hidden=false;document.getElementById('goalCardInput')?.focus()}
-    });
+    grid.querySelector('#addGoalCardButton')?.addEventListener('click',()=>showGoalModal(true));
   }
 
   function renderProcrastinatedItems(){
@@ -1081,10 +1086,10 @@
     goals.unshift(value);
     saveGoals();
     if(input)input.value='';
-    const form=document.getElementById('goalCardForm');
-    if(form)form.hidden=true;
+    showGoalModal(false);
     renderGoalCards();
   });
+  document.querySelectorAll('[data-close-goal-modal]').forEach(button=>button.addEventListener('click',()=>showGoalModal(false)));
   document.getElementById('procrastinatedForm')?.addEventListener('submit',event=>{
     event.preventDefault();
     const input=document.getElementById('procrastinatedInput');
