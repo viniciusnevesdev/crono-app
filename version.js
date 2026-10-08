@@ -1,4 +1,4 @@
 window.CRONO_RELEASE=Object.freeze({
-  version:'0.3.48',
-  name:'Botão Criar evento corrigido'
+  version:'0.3.49',
+  name:'Timeline sem margem branca'
 });
