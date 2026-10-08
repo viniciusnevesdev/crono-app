@@ -824,17 +824,10 @@
     const today=startOfLocalDay();
     const yesterday=new Date(today);
     yesterday.setDate(yesterday.getDate()-1);
-    renderTimeline(document.getElementById('todayTimeline'),today,{zoom:timelineZoom,throughNow:true,onZoomChange:nextZoom=>{
-      timelineZoom=nextZoom;
-      renderHomeTimelines();
-    }});
     renderTimeline(document.getElementById('yesterdayTimeline'),yesterday,{zoom:yesterdayTimelineZoom,compact:true,onZoomChange:nextZoom=>{
       yesterdayTimelineZoom=nextZoom;
       renderHomeTimelines();
     }});
-    document.querySelectorAll('[data-timeline-zoom]').forEach(button=>{
-      button.classList.toggle('selected',Math.abs(Number(button.dataset.timelineZoom)-timelineZoom)<.05);
-    });
   }
 
   function renderHistory(){
