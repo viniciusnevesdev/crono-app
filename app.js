@@ -828,6 +828,12 @@
       yesterdayTimelineZoom=nextZoom;
       renderHomeTimelines();
     }});
+    const todaySection=document.querySelector('.today-section');
+    if(todaySection)todaySection.hidden=false;
+    renderTimeline(document.getElementById('todayTimeline'),today,{zoom:timelineZoom,throughNow:true,onZoomChange:nextZoom=>{
+      timelineZoom=nextZoom;
+      renderHomeTimelines();
+    }});
   }
 
   function renderHistory(){
