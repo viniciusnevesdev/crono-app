@@ -469,6 +469,7 @@
   const TIMELINE_BASE_HEIGHT=720;
   const COLLISION_MINUTES=24;
   const COLLAPSED_SLEEP_HEIGHT=64;
+  const TIMELINE_EDGE_INSET=14;
   const TIMELINE_SKY_STOPS=[
     [0,'#060B26'],       // 00:00
     [180,'#0F2A6B'],     // 03:00
@@ -688,10 +689,10 @@
     return {bands,yForMinutes,minutesForY,height:height-removed};
   }
 
-  function timelineSkyGradient(layout){
-    const canvasHeight=Math.max(1,layout.height);
+  function timelineSkyGradient(layout,edgeInset=0){
+    const canvasHeight=Math.max(1,layout.height+edgeInset*2);
     const stops=TIMELINE_SKY_STOPS.map(([minutes,color])=>{
-      const position=Math.max(0,Math.min(100,(layout.yForMinutes(minutes)/canvasHeight)*100));
+      const position=Math.max(0,Math.min(100,((edgeInset+layout.yForMinutes(minutes))/canvasHeight)*100));
       return color+' '+position.toFixed(4)+'%';
     });
     return 'linear-gradient(to bottom,'+stops.join(',')+')';
@@ -705,7 +706,7 @@
     const dayEvents=eventsForDay(date).filter(event=>!currentDay||minutesOfDay(event.at)<=endMinutes);
     const height=Math.round(TIMELINE_BASE_HEIGHT*zoom);
     const sleepLayout=buildTimelineLayout(date,height,sleepIntervalsForDay(date));
-    const skyGradient=timelineSkyGradient(sleepLayout);
+    const skyGradient=timelineSkyGradient(sleepLayout,TIMELINE_EDGE_INSET);
     let collisionRun=0;
     let previousMinutes=-Infinity;
 
@@ -763,13 +764,15 @@
     }).join('');
 
     target.innerHTML=`<article class="day-timeline-card${compact?' compact':''}${currentDay?' current-day':''}" data-day="${dayKey(date)}">
-      <div class="timeline-canvas" style="height:${sleepLayout.height}px;--timeline-sky:${skyGradient}">
-        <div class="timeline-axis" aria-hidden="true"></div>
+      <div class="timeline-canvas" style="height:${sleepLayout.height+TIMELINE_EDGE_INSET*2}px;--timeline-sky:${skyGradient}">
+        <div class="timeline-content">
+          <div class="timeline-axis" aria-hidden="true"></div>
         ${sleepMarkup}
         ${hourLabels}
         ${gapMarkup}
         ${eventMarkup}
         ${dayEvents.length?'':`<div class="timeline-empty">Nenhum registro neste dia</div>`}
+        </div>
       </div>
     </article>`;
 
@@ -785,7 +788,8 @@
       });
     });
     const canvas=target.querySelector('.timeline-canvas');
-    if(canvas){
+    const timelineContent=target.querySelector('.timeline-content');
+    if(canvas&&timelineContent){
       const shouldIgnoreTimelineClick=enableTimelinePinch(canvas,zoom,onZoomChange,factor=>previewTimelineZoom(canvas,factor));
       canvas.addEventListener('click',event=>{
         if(shouldIgnoreTimelineClick?.())return;
@@ -793,7 +797,7 @@
         const rect=canvas.getBoundingClientRect();
         const axisX=rect.left+rect.width*.41;
         if(Math.abs(event.clientX-axisX)>28)return;
-        const y=Math.max(0,Math.min(sleepLayout.height,event.clientY-rect.top));
+        const y=Math.max(0,Math.min(sleepLayout.height,event.clientY-rect.top-TIMELINE_EDGE_INSET));
         const minutes=Math.max(0,Math.min(1439,Math.round(sleepLayout.minutesForY(y))));
         clearPendingTimelineTap();
         const dot=document.createElement('button');
@@ -809,7 +813,7 @@
           initialDate.setMinutes(minutes);
           openEventSheet(initialDate);
         });
-        canvas.appendChild(dot);
+        timelineContent.appendChild(dot);
         pendingTimelineTap={canvas,minutes};
         pendingTimelineTapTimer=setTimeout(clearPendingTimelineTap,5000);
       });
