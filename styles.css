@@ -40,9 +40,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .now-line{position:absolute;left:52px;right:0;height:2px;background:#e25e5b;pointer-events:none;z-index:7}
 .now-line:before{content:"";position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:#e25e5b}
 .now-line span{position:absolute;right:1px;top:-19px;padding:2px 5px;border-radius:5px;background:#e25e5b;color:white;font-size:10px;font-weight:700;font-variant-numeric:tabular-nums}
-.edge-glow{position:absolute;left:0;right:0;height:86px;pointer-events:none;z-index:12;opacity:0;transition:opacity 190ms ease;filter:blur(11px);will-change:opacity}
-.edge-glow.top{top:-25px;background:radial-gradient(ellipse 75% 70% at 50% 0%,rgba(240,132,140,.85) 0%,rgba(240,132,140,.22) 54%,transparent 100%)}
-.edge-glow.bottom{bottom:-25px;background:radial-gradient(ellipse 75% 70% at 50% 100%,rgba(177,139,222,.8) 0%,rgba(177,139,222,.19) 54%,transparent 100%)}
+.edge-glow{position:absolute;left:0;right:0;height:68px;pointer-events:none;z-index:12;opacity:0;transition:opacity 80ms ease-out;filter:blur(3px);will-change:opacity}
+.edge-glow.top{top:-3px;background:radial-gradient(ellipse 76% 94% at 50% 0%,rgba(236,17,50,.98) 0%,rgba(242,29,59,.88) 20%,rgba(247,61,84,.52) 43%,rgba(255,98,111,.18) 65%,transparent 85%)}
+.edge-glow.bottom{bottom:-3px;background:radial-gradient(ellipse 76% 94% at 50% 100%,rgba(236,17,50,.98) 0%,rgba(242,29,59,.88) 20%,rgba(247,61,84,.52) 43%,rgba(255,98,111,.18) 65%,transparent 85%)}
 .zoom{position:absolute;bottom:14px;right:13px;display:flex;align-items:center;background:#fff;border:1px solid #e2e7ee;border-radius:24px;z-index:13;overflow:hidden;box-shadow:0 4px 16px #26365320}
 .zoom button{width:40px;height:40px;border:0;background:#fff;color:#344154;font-size:21px}
 .zoom button:disabled{opacity:.23}

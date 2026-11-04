@@ -225,8 +225,8 @@
   const glowTop = $('#glow-top'), glowBottom = $('#glow-bottom');
   let lastTouchY = null, excessTop = 0, excessBottom = 0;
   function showEdgeGlow() {
-    glowTop.style.opacity = String(Math.min(.78, excessTop / 95));
-    glowBottom.style.opacity = String(Math.min(.78, excessBottom / 95));
+    glowTop.style.opacity = String(Math.min(1, excessTop / 55));
+    glowBottom.style.opacity = String(Math.min(1, excessBottom / 55));
   }
   function resetEdgeGlow() {
     lastTouchY = null; excessTop = 0; excessBottom = 0; showEdgeGlow();

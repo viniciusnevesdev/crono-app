@@ -29,3 +29,8 @@ Arquivos estáticos, sem dependências e sem backend. Publicação pelo GitHub P
 - Bloqueio do overscroll elástico na timeline do iOS com glow superior/inferior progressivo.
 - Persistência dos eventos inalterada.
 - Safari do iPhone exige validação real dos gestos.
+
+## Ajuste visual 3.1.1
+- Glow vermelho mais saturado, concentrado nas bordas e com blur reduzido (3px).
+- Intensidade responde mais rapidamente ao esforço de rolagem; topo e base com o mesmo vermelho.
+- iPhone/Safari: confirmar sensação visual do ajuste com toque real.
