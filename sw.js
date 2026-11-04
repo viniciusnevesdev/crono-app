@@ -1,6 +1,6 @@
 /* Cache somente dos recursos do Crono simplificado. */
-const CACHE='crono-simples-v3.5.0';
-const ASSETS=['./','./index.html','./styles.css?v=3.5.0','./app.js?v=3.5.0','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.jpg','./assets/etero-misto-24h.webp'];
+const CACHE='crono-simples-v3.5.1';
+const ASSETS=['./','./index.html','./styles.css?v=3.5.1','./app.js?v=3.5.1','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.jpg'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });
