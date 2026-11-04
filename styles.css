@@ -40,7 +40,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .now-line{position:absolute;left:52px;right:0;height:2px;background:#e25e5b;pointer-events:none;z-index:7}
 .now-line:before{content:"";position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:#e25e5b}
 .now-line span{position:absolute;right:1px;top:-19px;padding:2px 5px;border-radius:5px;background:#e25e5b;color:white;font-size:10px;font-weight:700;font-variant-numeric:tabular-nums}
-.edge-glow{position:absolute;left:50%;width:210%;height:44px;pointer-events:none;z-index:12;opacity:0;transition:none;filter:blur(5px);will-change:transform,opacity;transform:translateX(-50%) scaleY(.35)}
+.edge-glow{position:absolute;left:50%;width:210%;height:24px;pointer-events:none;z-index:12;opacity:0;transition:none;filter:blur(3px);will-change:transform,opacity;transform:translateX(-50%) scaleY(.25)}
 .edge-glow.top{top:-3px;transform-origin:center top;background:radial-gradient(ellipse 76% 94% at 50% 0%,rgba(226,36,0,1) 0%,rgba(226,36,0,.75) 23%,rgba(226,36,0,.3) 48%,transparent 85%)}
 .edge-glow.bottom{bottom:-3px;transform-origin:center bottom;background:radial-gradient(ellipse 76% 94% at 50% 100%,rgba(226,36,0,1) 0%,rgba(226,36,0,.75) 23%,rgba(226,36,0,.3) 48%,transparent 85%)}
 .zoom{position:absolute;bottom:14px;right:13px;display:flex;align-items:center;background:#fff;border:1px solid #e2e7ee;border-radius:24px;z-index:13;overflow:hidden;box-shadow:0 4px 16px #26365320}

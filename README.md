@@ -53,3 +53,10 @@ Configuração escolhida nos sliders do chat:
 - `retractionMs: 1500`
 
 O movimento é suavizado por quadros de animação, com resistência não linear durante o puxão e retração progressiva em 1,5 s quando o dedo solta. A inércia da timeline e os limites rígidos de rolagem permanecem independentes e inalterados. Necessária validação real no Safari do iPhone.
+
+## v3.3.1 — calibração de área e retração (04/11/2026)
+- heightPx 24 (antes 44), blurPx 3 (antes 5).
+- Retração 1050 ms (antes 1500 ms; redução de 30%).
+- Escala vertical do glow: de 0.25 a 0.85 (antes 0.35 a 1).
+- Cor #e22400, largura 210%, opacidade .82 e resistência 2.8 mantidas.
+- Inércia e limite da rolagem não alterados.

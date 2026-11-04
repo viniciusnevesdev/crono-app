@@ -237,8 +237,8 @@
   }
   // Configuração visual aprovada pelo usuário em 04/11/2026.
   const glowConfig = Object.freeze({
-    color: '#e22400', maxOpacity: .82, widthPercent: 210, heightPx: 44,
-    blurPx: 5, resistance: 2.8, retractionMs: 1500
+    color: '#e22400', maxOpacity: .82, widthPercent: 210, heightPx: 24,
+    blurPx: 3, resistance: 2.8, retractionMs: 1050
   });
   const glowLevels = {top: 0, bottom: 0};
   const glowTargets = {top: 0, bottom: 0};
@@ -247,7 +247,7 @@
     for (const [side, el] of [['top', glowTop], ['bottom', glowBottom]]) {
       const level = clamp(glowLevels[side], 0, 1);
       el.style.opacity = String(glowConfig.maxOpacity * level);
-      el.style.transform = 'translateX(-50%) scaleY(' + (.35 + .65 * level) + ')';
+      el.style.transform = 'translateX(-50%) scaleY(' + (.25 + .60 * level) + ')';
     }
   }
   function requestGlowFrame() {
