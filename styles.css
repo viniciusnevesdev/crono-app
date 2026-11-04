@@ -1,8 +1,8 @@
 :root{color-scheme:light;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f6f8fb;color:#273347;font-synthesis:none}
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;overscroll-behavior:none}
+html,body{margin:0;min-height:100%;overscroll-behavior:none;overflow:hidden}
 button,input,textarea{font:inherit}
-button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #8195b9;outline-offset:2px}
 .app{position:relative;display:flex;flex-direction:column;width:100%;max-width:480px;height:100vh;height:100dvh;min-height:420px;margin:0 auto;background:#fff;color:#273347;border-left:1px solid #e6eaf0;border-right:1px solid #e6eaf0;overflow:hidden;font-size:14px}
 .header{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:4px;padding:calc(17px + env(safe-area-inset-top)) 13px 17px;border-bottom:1px solid #edf0f4;background:#fff;z-index:2;flex-shrink:0}
@@ -15,7 +15,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .right{display:flex;align-items:center;justify-content:flex-end;gap:6px}
 .help-button{background:none;border:1px solid #dce2eb;color:#8190a2;border-radius:50%;height:23px;width:23px;flex-shrink:0;display:flex;justify-content:center;align-items:center;font-size:13px;font-weight:650;padding:0}
 .add{background:#29344a;color:#fff;border:0;border-radius:22px;padding:11px 13px;white-space:nowrap;font-size:12px;font-weight:700}
-.timeline-wrap{position:relative;flex:1;min-height:0}
+.timeline-wrap{position:relative;flex:1;min-height:0;overflow:hidden;isolation:isolate}
 .view{height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:thin;background:#fff}
 .canvas{position:relative;margin-right:10px;min-height:100%}
 .axis{position:absolute;top:0;bottom:0;left:55px;border-left:2px solid #e7ebf2;pointer-events:none}
@@ -40,6 +40,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .now-line{position:absolute;left:52px;right:0;height:2px;background:#e25e5b;pointer-events:none;z-index:7}
 .now-line:before{content:"";position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:#e25e5b}
 .now-line span{position:absolute;right:1px;top:-19px;padding:2px 5px;border-radius:5px;background:#e25e5b;color:white;font-size:10px;font-weight:700;font-variant-numeric:tabular-nums}
+.edge-glow{position:absolute;left:0;right:0;height:86px;pointer-events:none;z-index:12;opacity:0;transition:opacity 190ms ease;filter:blur(11px);will-change:opacity}
+.edge-glow.top{top:-25px;background:radial-gradient(ellipse 75% 70% at 50% 0%,rgba(240,132,140,.85) 0%,rgba(240,132,140,.22) 54%,transparent 100%)}
+.edge-glow.bottom{bottom:-25px;background:radial-gradient(ellipse 75% 70% at 50% 100%,rgba(177,139,222,.8) 0%,rgba(177,139,222,.19) 54%,transparent 100%)}
 .zoom{position:absolute;bottom:14px;right:13px;display:flex;align-items:center;background:#fff;border:1px solid #e2e7ee;border-radius:24px;z-index:13;overflow:hidden;box-shadow:0 4px 16px #26365320}
 .zoom button{width:40px;height:40px;border:0;background:#fff;color:#344154;font-size:21px}
 .zoom button:disabled{opacity:.23}

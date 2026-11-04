@@ -22,3 +22,10 @@ Sem eventos fictícios ao iniciar: o calendário novo começa vazio para evitar 
 
 ## Desenvolvimento
 Arquivos estáticos, sem dependências e sem backend. Publicação pelo GitHub Pages no branch `main`. Ícones antigos mantidos temporariamente até substituição pelo pacote escolhido pelo usuário.
+
+## Atualização 3.1.0 (04/11/2026)
+- Zoom: 24h, 18h, 12h, 8h, 6h, 4h e 2h.
+- touch-action: manipulation nos botões para evitar zoom do navegador por duplo toque (sem retirar pinça de zoom).
+- Bloqueio do overscroll elástico na timeline do iOS com glow superior/inferior progressivo.
+- Persistência dos eventos inalterada.
+- Safari do iPhone exige validação real dos gestos.

@@ -6,9 +6,9 @@
   const canvas = $('#canvas');
   const eventbox = $('#events');
   const portal = $('#modal');
-  const zooms = [24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2];
+  const zooms = [24, 18, 12, 8, 6, 4, 2];
   const KEY = 'crono-simples-v1';
-  let zoomIndex = 6, pxHour = 0, selected = null, formMode = 'now', idCounter = 0;
+  let zoomIndex = 2, pxHour = 0, selected = null, formMode = 'now', idCounter = 0;
   const pad = (n) => String(n).padStart(2, '0');
   let dayKey = localDay(), events = loadDay(dayKey);
   const fmt = (n) => { n = Math.round(n); return pad(Math.floor(n / 60)) + ':' + pad(n % 60); };
@@ -220,6 +220,49 @@
     clearTimeout(toastTimer);
     toastTimer=setTimeout(()=>t.hidden=true,3000);
   }
+  // Bloqueia o overscroll elástico do conteúdo no iOS, substituindo-o por um halo discreto.
+  // Não interfere no scroll normal, nem no redimensionamento de eventos selecionados.
+  const glowTop = $('#glow-top'), glowBottom = $('#glow-bottom');
+  let lastTouchY = null, excessTop = 0, excessBottom = 0;
+  function showEdgeGlow() {
+    glowTop.style.opacity = String(Math.min(.78, excessTop / 95));
+    glowBottom.style.opacity = String(Math.min(.78, excessBottom / 95));
+  }
+  function resetEdgeGlow() {
+    lastTouchY = null; excessTop = 0; excessBottom = 0; showEdgeGlow();
+  }
+  view.addEventListener('touchstart', (e)=>{
+    if(e.touches.length!==1)return;
+    lastTouchY=e.touches[0].clientY;
+    excessTop=0;excessBottom=0;showEdgeGlow();
+  },{passive:true});
+  view.addEventListener('touchmove', (e)=>{
+    if(e.touches.length!==1 || lastTouchY===null || e.target.closest('.ev.selected'))return;
+    const y=e.touches[0].clientY, delta=y-lastTouchY;
+    lastTouchY=y;
+    const limit=Math.max(0,view.scrollHeight-view.clientHeight);
+    const atTop=view.scrollTop<=1;
+    const atBottom=view.scrollTop>=limit-1;
+    if(atTop && (delta>0 || excessTop>0)){
+      excessTop=clamp(excessTop+delta,0,120);excessBottom=0;
+      if(e.cancelable)e.preventDefault();
+      showEdgeGlow();
+    }else if(atBottom && (delta<0 || excessBottom>0)){
+      excessBottom=clamp(excessBottom-delta,0,120);excessTop=0;
+      if(e.cancelable)e.preventDefault();
+      showEdgeGlow();
+    }else if(excessTop || excessBottom){
+      excessTop=0;excessBottom=0;showEdgeGlow();
+    }
+  },{passive:false});
+  view.addEventListener('touchend',resetEdgeGlow,{passive:true});
+  view.addEventListener('touchcancel',resetEdgeGlow,{passive:true});
+  view.addEventListener('scroll',()=>{
+    const limit=Math.max(0,view.scrollHeight-view.clientHeight);
+    if((excessTop && view.scrollTop>1)||(excessBottom && view.scrollTop<limit-1)){
+      excessTop=0;excessBottom=0;showEdgeGlow();
+    }
+  },{passive:true});
   $('#add').onclick=()=>{formMode='now';showForm('new');};
   $('#nowbtn').onclick=()=>scrollToMinute(now(),true);
   $('#minus').onclick=()=>{if(zoomIndex>0){zoomIndex--;applyZoom();}};
@@ -230,7 +273,7 @@
       '<div class="help-item"><strong>Mover:</strong> arraste o evento selecionado.</div>'+
       '<div class="help-item"><strong>Ajustar duração:</strong> arraste a extremidade superior ou inferior.</div>'+
       '<div class="help-item"><strong>Detalhes:</strong> toque novamente no centro do evento.</div>'+
-      '<div class="help-item"><strong>Zoom:</strong> use − e + para mudar 2 horas por toque, de 24h até 2h.</div>'+
+      '<div class="help-item"><strong>Zoom:</strong> use − e + para alternar entre 24h, 18h, 12h, 8h, 6h, 4h e 2h.</div>'+
       '<div class="help-item"><strong>Agora:</strong> toque no relógio para localizar o horário atual.</div>'+
       '<div class="help-item"><strong>Cores:</strong> azul acinzentado indica passado; verde, evento em andamento; roxo, evento planejado.</div>'+
       '</div><div class="buttons"><button class="primary" id="understood">Entendi</button></div>');

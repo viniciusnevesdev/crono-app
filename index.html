@@ -11,9 +11,9 @@
 <link rel="manifest" href="./manifest.webmanifest?v=3">
 <link rel="icon" href="./icons/favicon-32.png" type="image/png">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon-180.png">
-<link rel="stylesheet" href="./styles.css?v=3.0.0">
+<link rel="stylesheet" href="./styles.css?v=3.1.0">
 <title>Crono</title>
-<script src="./app.js?v=3.0.0" defer></script>
+<script src="./app.js?v=3.1.0" defer></script>
 </head>
 <body>
 <main id="crono" class="app" aria-label="Crono">
@@ -40,6 +40,8 @@
         <div class="now-line" id="nowline" aria-hidden="true"><span id="nowlabel"></span></div>
       </div>
     </div>
+    <div class="edge-glow top" id="glow-top" aria-hidden="true"></div>
+    <div class="edge-glow bottom" id="glow-bottom" aria-hidden="true"></div>
     <div class="zoom" role="group" aria-label="Zoom temporal">
       <button id="minus" aria-label="Diminuir zoom">−</button>
       <div class="separator"></div>
