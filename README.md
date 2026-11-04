@@ -60,3 +60,9 @@ O movimento é suavizado por quadros de animação, com resistência não linear
 - Escala vertical do glow: de 0.25 a 0.85 (antes 0.35 a 1).
 - Cor #e22400, largura 210%, opacidade .82 e resistência 2.8 mantidas.
 - Inércia e limite da rolagem não alterados.
+
+## v3.4.0 — relógio glass e linha do agora luminosos (04/11/2026)
+- Relógio central em cápsula translúcida com bordas totalmente arredondadas, fundo quente suave, blur interno e halo externo. Mantido clique para ir ao horário atual.
+- Linha vermelha do horário atual com brilho suave e ponto de origem luminoso; marcador HH:MM do lado direito em cápsula vermelha saturada.
+- Sem alterações de posicionamento dos eventos, zoom, rolagem/inércia, glow de limite ou armazenamento.
+- Conferir aparência e toque no Safari do iPhone após publicação.
