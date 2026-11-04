@@ -76,3 +76,8 @@ O movimento é suavizado por quadros de animação, com resistência não linear
 ## v3.5.2 — cores do logotipo restauradas (04/11/2026)
 - Nome Crono em roxo #543482 e ponto em coral #f06343, recuperados do visual v3.5.0 a pedido do usuário.
 - Fundo branco v3.5.1, relógio glass, linha vermelha, controles e armazenamento preservados.
+
+## v3.5.3 — relógio do topo no mesmo laranja da etiqueta (04/11/2026)
+- Texto AGORA e HH:MM do topo com exatamente o mesmo gradiente do marcador pequeno (#ff5735 → #e22400).
+- Cápsula superior glass com tonalidade laranja quente e halo 15% mais intenso em alfa e saturação, sem alterar o glow da linha horizontal.
+- Fundo branco e dados de eventos/rolagem/zoom preservados.
