@@ -81,3 +81,7 @@ O movimento é suavizado por quadros de animação, com resistência não linear
 - Texto AGORA e HH:MM do topo com exatamente o mesmo gradiente do marcador pequeno (#ff5735 → #e22400).
 - Cápsula superior glass com tonalidade laranja quente e halo 15% mais intenso em alfa e saturação, sem alterar o glow da linha horizontal.
 - Fundo branco e dados de eventos/rolagem/zoom preservados.
+
+## v3.5.4 — botão + Evento roxo (04/11/2026)
+- Cor de fundo do botão + Evento igual ao texto do nome Crono: #543482 (cor sólida).
+- Texto branco, formato, demais componentes e dados mantidos.

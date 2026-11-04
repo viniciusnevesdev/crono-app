@@ -1,6 +1,6 @@
 /* Cache somente dos recursos do Crono simplificado. */
-const CACHE='crono-simples-v3.5.3';
-const ASSETS=['./','./index.html','./styles.css?v=3.5.3','./app.js?v=3.5.3','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.jpg'];
+const CACHE='crono-simples-v3.5.4';
+const ASSETS=['./','./index.html','./styles.css?v=3.5.4','./app.js?v=3.5.4','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.jpg'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });

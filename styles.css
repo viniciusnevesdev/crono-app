@@ -15,7 +15,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .clock strong{font-size:19px;color:#e22400;background:var(--now-capsule-gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:780;letter-spacing:-.6px;line-height:1.12;font-variant-numeric:tabular-nums}
 .right{display:flex;align-items:center;justify-content:flex-end;gap:6px}
 .help-button{background:none;border:1px solid #dce2eb;color:#8190a2;border-radius:50%;height:23px;width:23px;flex-shrink:0;display:flex;justify-content:center;align-items:center;font-size:13px;font-weight:650;padding:0}
-.add{background:#29344a;color:#fff;border:0;border-radius:22px;padding:11px 13px;white-space:nowrap;font-size:12px;font-weight:700}
+.add{background:#543482;color:#fff;border:0;border-radius:22px;padding:11px 13px;white-space:nowrap;font-size:12px;font-weight:700}
 .timeline-wrap{position:relative;flex:1;min-height:0;overflow:hidden;isolation:isolate}
 .view{height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:none;touch-action:pinch-zoom;scrollbar-width:thin;background:#fff}
 .canvas{position:relative;margin-right:10px;min-height:100%}
