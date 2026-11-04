@@ -66,3 +66,11 @@ O movimento é suavizado por quadros de animação, com resistência não linear
 - Linha vermelha do horário atual com brilho suave e ponto de origem luminoso; marcador HH:MM do lado direito em cápsula vermelha saturada.
 - Sem alterações de posicionamento dos eventos, zoom, rolagem/inércia, glow de limite ou armazenamento.
 - Conferir aparência e toque no Safari do iPhone após publicação.
+
+## v3.5.0 — fundo etéreo misto (04/11/2026)
+- Fundo de timeline em WebP estático gerado localmente, sem texto ou controles embutidos; arte de 00h a 24h alinhada a todas as opções de zoom.
+- Mistura de azuis, lavandas, rosas, pêssegos e laranjas; blobs difusos, arcos, lua e pétalas discretas. Zero animação contínua do fundo.
+- Arte derivada do script reproduzível `tools/generate_ethereal_background.py` (Pillow em desenvolvimento; sem dependências na execução do app).
+- Legibilidade e integração: horários transparentes, grade suavizada, eventos translúcidos, cabeçalho e controles com tonalidades combinando.
+- PWA offline inclui asset WebP. Chave de armazenamento e código de gestos/zoom/eventos inalterados.
+- Pendente: validação visual e desempenho no Safari/iPhone.
