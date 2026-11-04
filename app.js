@@ -235,17 +235,72 @@
     inertiaId = 0;
     inertiaVelocity = 0;
   }
+  // Configuração visual aprovada pelo usuário em 04/11/2026.
+  const glowConfig = Object.freeze({
+    color: '#e22400', maxOpacity: .82, widthPercent: 210, heightPx: 44,
+    blurPx: 5, resistance: 2.8, retractionMs: 1500
+  });
+  const glowLevels = {top: 0, bottom: 0};
+  const glowTargets = {top: 0, bottom: 0};
+  let glowFrameId = 0, lastGlowFrame = 0, glowRetraction = null;
+  function paintGlow() {
+    for (const [side, el] of [['top', glowTop], ['bottom', glowBottom]]) {
+      const level = clamp(glowLevels[side], 0, 1);
+      el.style.opacity = String(glowConfig.maxOpacity * level);
+      el.style.transform = 'translateX(-50%) scaleY(' + (.35 + .65 * level) + ')';
+    }
+  }
+  function requestGlowFrame() {
+    if (!glowFrameId) glowFrameId = requestAnimationFrame(animateGlow);
+  }
+  function animateGlow(timestamp) {
+    glowFrameId = 0;
+    const dt = lastGlowFrame ? Math.min(48, Math.max(0, timestamp-lastGlowFrame)) : 16.67;
+    lastGlowFrame = timestamp;
+    if (glowRetraction) {
+      const progress = clamp((timestamp-glowRetraction.start) / glowConfig.retractionMs, 0, 1);
+      // Retração progressiva: decelera ao voltar para dentro da borda.
+      const remaining = Math.pow(1-progress, 3);
+      glowLevels.top = glowRetraction.top * remaining;
+      glowLevels.bottom = glowRetraction.bottom * remaining;
+      if (progress >= 1) glowRetraction = null;
+    } else {
+      // Interpolação por quadro: sem saltos entre os eventos de toque do iPhone.
+      const smooth = 1 - Math.exp(-dt / 65);
+      glowLevels.top += (glowTargets.top-glowLevels.top)*smooth;
+      glowLevels.bottom += (glowTargets.bottom-glowLevels.bottom)*smooth;
+    }
+    paintGlow();
+    if (glowRetraction ||
+        Math.abs(glowTargets.top-glowLevels.top)>.0002 ||
+        Math.abs(glowTargets.bottom-glowLevels.bottom)>.0002) {
+      requestGlowFrame();
+    } else {
+      glowLevels.top = glowTargets.top;
+      glowLevels.bottom = glowTargets.bottom;
+      paintGlow();
+      lastGlowFrame = 0;
+    }
+  }
   function showEdgeGlow() {
-    const topPull = gesture?.topPull || 0;
-    const bottomPull = gesture?.bottomPull || 0;
     const threshold = Math.max(160, gesture?.edgeTravel || view.clientHeight);
-    // Curva progressiva: precisa arrastar quase toda a tela para atingir 100%.
-    glowTop.style.opacity = String(Math.pow(clamp(topPull / threshold, 0, 1), 1.65));
-    glowBottom.style.opacity = String(Math.pow(clamp(bottomPull / threshold, 0, 1), 1.65));
+    // A intensidade aumenta de forma não linear (resistência 2.8).
+    glowTargets.top = Math.pow(clamp((gesture?.topPull || 0)/threshold, 0, 1), glowConfig.resistance);
+    glowTargets.bottom = Math.pow(clamp((gesture?.bottomPull || 0)/threshold, 0, 1), glowConfig.resistance);
+    glowRetraction = null;
+    requestGlowFrame();
   }
   function clearGlow() {
-    glowTop.style.opacity = '0';
-    glowBottom.style.opacity = '0';
+    glowTargets.top = 0;
+    glowTargets.bottom = 0;
+    // Conserva o brilho do último quadro para recuar suavemente durante 1500 ms.
+    if (glowLevels.top > .0002 || glowLevels.bottom > .0002) {
+      glowRetraction = {start: performance.now(), top: glowLevels.top, bottom: glowLevels.bottom};
+      requestGlowFrame();
+    } else {
+      glowRetraction = null;
+      paintGlow();
+    }
   }
   function startInertia(speed) {
     stopInertia();

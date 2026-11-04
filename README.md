@@ -41,3 +41,15 @@ Arquivos estáticos, sem dependências e sem backend. Publicação pelo GitHub P
 - Glow somente com o dedo pressionado, proporcional à distância restante até a borda oposta.
 - Cor principal #e22400, mantendo desfoque localizado.
 - Validar no Safari/iPhone; o comportamento de gestos depende do WebKit.
+
+## Calibração do glow v3.3.0 (04/11/2026)
+Configuração escolhida nos sliders do chat:
+- `color: #e22400`
+- `maxOpacity: 82%`
+- `widthPercent: 210%`
+- `heightPx: 44px`
+- `blurPx: 5px`
+- `resistance: 2.8`
+- `retractionMs: 1500`
+
+O movimento é suavizado por quadros de animação, com resistência não linear durante o puxão e retração progressiva em 1,5 s quando o dedo solta. A inércia da timeline e os limites rígidos de rolagem permanecem independentes e inalterados. Necessária validação real no Safari do iPhone.
