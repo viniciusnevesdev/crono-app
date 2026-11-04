@@ -72,3 +72,7 @@ O movimento é suavizado por quadros de animação, com resistência não linear
 - Código funcional e chave localStorage crono-simples-v1 inalterados.
 - Novo cache de serviço v3.5.1 evita reutilização do fundo anterior.
 - Histórico da v3.5.0 preservado no Git (commit 326b39d), sem force push.
+
+## v3.5.2 — cores do logotipo restauradas (04/11/2026)
+- Nome Crono em roxo #543482 e ponto em coral #f06343, recuperados do visual v3.5.0 a pedido do usuário.
+- Fundo branco v3.5.1, relógio glass, linha vermelha, controles e armazenamento preservados.
