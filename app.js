@@ -57,10 +57,12 @@
     $('#nowline').style.top = n/60*pxHour+'px';
   }
   function scrollToMinute(min, smooth) {
+    stopInertia();
     const y = clamp(min/60*pxHour - view.clientHeight/2, 0, Math.max(0, view.scrollHeight-view.clientHeight));
     view.scrollTo({top:y,behavior:smooth?'smooth':'instant'});
   }
   function applyZoom(focus) {
+    stopInertia();
     const center = typeof focus === 'number' ? focus :
       (pxHour > 0 ? (view.scrollTop + view.clientHeight/2)/pxHour*60 : now());
     pxHour = view.clientHeight / zooms[zoomIndex];
@@ -220,49 +222,124 @@
     clearTimeout(toastTimer);
     toastTimer=setTimeout(()=>t.hidden=true,3000);
   }
-  // Bloqueia o overscroll elástico do conteúdo no iOS, substituindo-o por um halo discreto.
-  // Não interfere no scroll normal, nem no redimensionamento de eventos selecionados.
+  // Rolagem própria da timeline: o iOS não pode aplicar o elástico nativo,
+  // inclusive em movimentos rápidos que atravessam a borda por inércia.
+  // A inércia é simulada e limitada; o brilho aparece APENAS enquanto o dedo puxa.
   const glowTop = $('#glow-top'), glowBottom = $('#glow-bottom');
-  let lastTouchY = null, excessTop = 0, excessBottom = 0;
+  let gesture = null, inertiaId = 0, inertiaVelocity = 0;
+  function maxScroll() {
+    return Math.max(0, view.scrollHeight - view.clientHeight);
+  }
+  function stopInertia() {
+    if (inertiaId) cancelAnimationFrame(inertiaId);
+    inertiaId = 0;
+    inertiaVelocity = 0;
+  }
   function showEdgeGlow() {
-    glowTop.style.opacity = String(Math.min(1, excessTop / 55));
-    glowBottom.style.opacity = String(Math.min(1, excessBottom / 55));
+    const topPull = gesture?.topPull || 0;
+    const bottomPull = gesture?.bottomPull || 0;
+    const threshold = Math.max(160, gesture?.edgeTravel || view.clientHeight);
+    // Curva progressiva: precisa arrastar quase toda a tela para atingir 100%.
+    glowTop.style.opacity = String(Math.pow(clamp(topPull / threshold, 0, 1), 1.65));
+    glowBottom.style.opacity = String(Math.pow(clamp(bottomPull / threshold, 0, 1), 1.65));
   }
-  function resetEdgeGlow() {
-    lastTouchY = null; excessTop = 0; excessBottom = 0; showEdgeGlow();
+  function clearGlow() {
+    glowTop.style.opacity = '0';
+    glowBottom.style.opacity = '0';
   }
-  view.addEventListener('touchstart', (e)=>{
-    if(e.touches.length!==1)return;
-    lastTouchY=e.touches[0].clientY;
-    excessTop=0;excessBottom=0;showEdgeGlow();
-  },{passive:true});
-  view.addEventListener('touchmove', (e)=>{
-    if(e.touches.length!==1 || lastTouchY===null || e.target.closest('.ev.selected'))return;
-    const y=e.touches[0].clientY, delta=y-lastTouchY;
-    lastTouchY=y;
-    const limit=Math.max(0,view.scrollHeight-view.clientHeight);
-    const atTop=view.scrollTop<=1;
-    const atBottom=view.scrollTop>=limit-1;
-    if(atTop && (delta>0 || excessTop>0)){
-      excessTop=clamp(excessTop+delta,0,120);excessBottom=0;
-      if(e.cancelable)e.preventDefault();
-      showEdgeGlow();
-    }else if(atBottom && (delta<0 || excessBottom>0)){
-      excessBottom=clamp(excessBottom-delta,0,120);excessTop=0;
-      if(e.cancelable)e.preventDefault();
-      showEdgeGlow();
-    }else if(excessTop || excessBottom){
-      excessTop=0;excessBottom=0;showEdgeGlow();
+  function startInertia(speed) {
+    stopInertia();
+    inertiaVelocity = clamp(speed, -2.4, 2.4);
+    if (Math.abs(inertiaVelocity) < .12) return;
+    let prev = performance.now();
+    function frame(timestamp) {
+      const dt = Math.min(35, timestamp - prev);
+      prev = timestamp;
+      const limit = maxScroll();
+      const attempted = view.scrollTop + inertiaVelocity * dt;
+      const bounded = clamp(attempted, 0, limit);
+      view.scrollTop = bounded;
+      // Sem overscroll, sem brilho e sem movimento de retorno por mola.
+      if (bounded !== attempted || Math.abs(inertiaVelocity) < .035) {
+        stopInertia();
+        return;
+      }
+      inertiaVelocity *= Math.pow(.947, dt / 16.7);
+      inertiaId = requestAnimationFrame(frame);
     }
-  },{passive:false});
-  view.addEventListener('touchend',resetEdgeGlow,{passive:true});
-  view.addEventListener('touchcancel',resetEdgeGlow,{passive:true});
-  view.addEventListener('scroll',()=>{
-    const limit=Math.max(0,view.scrollHeight-view.clientHeight);
-    if((excessTop && view.scrollTop>1)||(excessBottom && view.scrollTop<limit-1)){
-      excessTop=0;excessBottom=0;showEdgeGlow();
+    inertiaId = requestAnimationFrame(frame);
+  }
+  view.addEventListener('touchstart', (e) => {
+    stopInertia();
+    clearGlow();
+    gesture = null;
+    if (e.touches.length !== 1 || e.target.closest('.ev.selected')) return;
+    gesture = {
+      lastY: e.touches[0].clientY,
+      lastTime: performance.now(),
+      velocity: 0,
+      topPull: 0,
+      bottomPull: 0,
+      edgeTravel: view.clientHeight
+    };
+  }, {passive:true});
+  view.addEventListener('touchmove', (e) => {
+    if (!gesture || e.touches.length !== 1) return;
+    if (e.cancelable) e.preventDefault();
+    const y = e.touches[0].clientY;
+    const t = performance.now();
+    const delta = y - gesture.lastY;
+    const dt = Math.max(8, t - gesture.lastTime);
+    gesture.lastY = y;
+    gesture.lastTime = t;
+    let remaining = delta;
+    // Desfaz o esforço do dedo antes de permitir rolar no sentido oposto.
+    if (gesture.topPull > 0) {
+      const remainingPull = gesture.topPull + remaining;
+      gesture.topPull = Math.max(0, remainingPull);
+      remaining = Math.min(0, remainingPull);
+    } else if (gesture.bottomPull > 0) {
+      const remainingPull = gesture.bottomPull - remaining;
+      gesture.bottomPull = Math.max(0, remainingPull);
+      remaining = Math.max(0, -remainingPull);
     }
-  },{passive:true});
+    const previous = view.scrollTop;
+    const requested = previous - remaining;
+    const limit = maxScroll();
+    view.scrollTop = clamp(requested, 0, limit);
+    const crossedTop = Math.max(0, -requested);
+    const crossedBottom = Math.max(0, requested - limit);
+    if (crossedTop > 0) {
+      if (gesture.topPull === 0) {
+        gesture.edgeTravel = Math.max(160, view.getBoundingClientRect().bottom - y);
+      }
+      gesture.topPull += crossedTop;
+      gesture.bottomPull = 0;
+    } else if (crossedBottom > 0) {
+      if (gesture.bottomPull === 0) {
+        gesture.edgeTravel = Math.max(160, y - view.getBoundingClientRect().top);
+      }
+      gesture.bottomPull += crossedBottom;
+      gesture.topPull = 0;
+    }
+    const moved = view.scrollTop - previous;
+    // A velocidade considera somente o movimento real do conteúdo, não o esforço além do limite.
+    gesture.velocity = moved ? (.65 * (moved / dt) + .35 * gesture.velocity) : 0;
+    showEdgeGlow();
+  }, {passive:false});
+  function finishGesture() {
+    if (!gesture) { clearGlow(); return; }
+    const velocity = gesture.topPull || gesture.bottomPull ? 0 : gesture.velocity;
+    gesture = null;
+    clearGlow();
+    startInertia(velocity);
+  }
+  view.addEventListener('touchend', finishGesture, {passive:true});
+  view.addEventListener('touchcancel', () => {
+    gesture = null;
+    clearGlow();
+    stopInertia();
+  }, {passive:true});
   $('#add').onclick=()=>{formMode='now';showForm('new');};
   $('#nowbtn').onclick=()=>scrollToMinute(now(),true);
   $('#minus').onclick=()=>{if(zoomIndex>0){zoomIndex--;applyZoom();}};

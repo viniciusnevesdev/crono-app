@@ -34,3 +34,10 @@ Arquivos estáticos, sem dependências e sem backend. Publicação pelo GitHub P
 - Glow vermelho mais saturado, concentrado nas bordas e com blur reduzido (3px).
 - Intensidade responde mais rapidamente ao esforço de rolagem; topo e base com o mesmo vermelho.
 - iPhone/Safari: confirmar sensação visual do ajuste com toque real.
+
+## Ajuste 3.2.0 — rolagem sem borracha
+- Rolagem da timeline controlada no toque: limite rígido inclusive após flick/inércia.
+- Inércia leve implementada em JavaScript com interrupção no fim; sem reflexo elástico.
+- Glow somente com o dedo pressionado, proporcional à distância restante até a borda oposta.
+- Cor principal #e22400, mantendo desfoque localizado.
+- Validar no Safari/iPhone; o comportamento de gestos depende do WebKit.
